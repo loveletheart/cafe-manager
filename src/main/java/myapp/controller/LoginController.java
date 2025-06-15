@@ -107,5 +107,5 @@ public class LoginController {
         // 로그인 성공 후 메뉴 페이지로 리디렉션
         response.sendRedirect("/menu");
     }
-    //업데이트 권환테스트8
+    //업데이트 권환테스트9
 }
