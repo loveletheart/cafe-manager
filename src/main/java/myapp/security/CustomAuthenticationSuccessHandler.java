@@ -18,7 +18,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         Object principal = authentication.getPrincipal();
-        System.out.print("test");
 
         if (principal instanceof UserData user) {  // UserData로 변환 가능
             if ("master".equals(user.getId())) {  // ID 기반 비교
