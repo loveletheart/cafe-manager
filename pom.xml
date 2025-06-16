@@ -103,6 +103,7 @@
 	      <artifactId>maven-compiler-plugin</artifactId>
 	      <version>3.11.0</version>
 	      <configuration>
+	        <release>17</release>
 	        <fork>true</fork>
 	        <compilerArgs>
 	          <arg>--add-opens</arg>
@@ -110,7 +111,7 @@
 	        </compilerArgs>
 	      </configuration>
 	    </plugin>
-  </plugins>
-</build>
+	  </plugins>
+	</build>
 
 </project>
