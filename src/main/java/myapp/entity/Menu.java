@@ -3,9 +3,13 @@ package myapp.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "menu")
+@Getter
+@Setter
+@Data
 public class Menu {
 
     @Id
@@ -13,38 +17,5 @@ public class Menu {
     private String menu_Nameen;
     private String type;
     private int price;
-
-    // Getters and Setters
-    public String getMenu() {
-        return type;
-    }
-
-    public void setMenu(String type) {
-        this.type = type;
-    }
-
-    public String getMenuName() {
-        return menu_Name;
-    }
-
-    public void setMenuName(String menu_Name) {
-        this.menu_Name = menu_Name;
-    }
-    
-    public String getMenuNameen() {
-        return menu_Nameen;
-    }
-
-    public void setMenuNameen(String menu_Nameen) {
-        this.menu_Nameen = menu_Nameen;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-    
+   
 }

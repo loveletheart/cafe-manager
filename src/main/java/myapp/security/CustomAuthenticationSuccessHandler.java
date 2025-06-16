@@ -22,7 +22,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         if (principal instanceof UserData user) {  // UserData로 변환 가능
             if ("master".equals(user.getId())) {  // ID 기반 비교
-                setDefaultTargetUrl("/ods/ODS");
+                setDefaultTargetUrl("/admin");
             } else {
                 setDefaultTargetUrl("/menu");
             }

@@ -75,6 +75,14 @@ public class LoginController {
     }
     
     /**
+     * master아이디로 로그인시 admin페이지로 이동한다.
+     */
+    @GetMapping("/admin")
+    public String showAdminPage() {
+        return "admin/admin";
+    }
+    
+    /**
      * QR코드 촬여후 보안을 위해 html로 들어가서 post요청을한다.
      */
     @GetMapping("/QRredirect")
@@ -107,5 +115,4 @@ public class LoginController {
         // 로그인 성공 후 메뉴 페이지로 리디렉션
         response.sendRedirect("/menu");
     }
-    //업데이트 권환테스트9
 }

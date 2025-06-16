@@ -15,7 +15,7 @@ import myapp.entity.Order;
 import myapp.repository.OrderRepository;
 
 @Controller
-@RequestMapping("/ods")
+@RequestMapping("/admin")
 public class OdsController {
 	
 	@Autowired
@@ -26,7 +26,7 @@ public class OdsController {
      */
     @GetMapping("/ODS")
     public String showODS() {
-        return "ods/ODS";
+        return "admin/ODS";
     }
     
     /**

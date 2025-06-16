@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메뉴 목록</title>
+</head>
+<body>
+<h2>메뉴 목록</h2>
+
+<a th:href="@{/admin/menu/add}">메뉴 추가</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>이름</th>
+        <th>영문이름</th>
+        <th>타입</th>
+        <th>가격</th>
+        <th>수정/삭제</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="menu : ${menus}">
+        <td th:text="${menu.menu_Name}"></td>
+        <td th:text="${menu.menu_Nameen}"></td>
+        <td th:text="${menu.type}"></td>
+        <td th:text="${menu.price}"></td>
+        <td>
+            <a th:href="@{|/admin/menu/edit/${menu.menu_Name}|}">수정</a>
+            <a th:href="@{|/admin/menu/delete/${menu.menu_Name}|}" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

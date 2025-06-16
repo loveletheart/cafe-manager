@@ -47,7 +47,7 @@ public class MenuService {
             cartRepository.save(cart.get());
         } else {
             Menu menu = menuItem.get();
-            Cart newCart = new Cart(userId, menu.getMenuName(), menu.getMenuNameen(), 1, menu.getPrice());//없으면 새로 추가
+            Cart newCart = new Cart(userId, menu.getMenu_Name(), menu.getMenu_Nameen(), 1, menu.getPrice());//없으면 새로 추가
             cartRepository.save(newCart);
         }
 

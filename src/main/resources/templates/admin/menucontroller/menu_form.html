@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메뉴 추가/수정</title>
+</head>
+<body>
+<h2 th:text="${menu.menu_Name == null ? '메뉴 추가' : '메뉴 수정'}"></h2>
+
+<!-- 중복 에러 메시지 -->
+<div th:if="${error}" style="color:red;">
+    <p th:text="${error}"></p>
+</div>
+
+<form th:action="@{${menu.menu_Name == null} ? '/admin/menu/add' : '/admin/menu/edit/' + ${menu.menu_Name}}" th:object="${menu}" method="post">
+    <label>메뉴 이름 (PK)</label><br>
+    <input type="text" th:field="*{menu_Name}" th:readonly="${menu.menu_Name != null}" required/><br>
+
+    <label>영문 이름</label><br>
+    <input type="text" th:field="*{menu_Nameen}" required/><br>
+
+    <label>타입</label><br>
+    <input type="text" th:field="*{type}" required/><br>
+
+    <label>가격</label><br>
+    <input type="number" th:field="*{price}" required/><br><br>
+
+    <button type="submit">저장</button>
+</form>
+
+<a th:href="@{/admin/menu}">목록으로 돌아가기</a>
+</body>
+</html>
