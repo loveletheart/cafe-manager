@@ -88,20 +88,29 @@
 		    <version>8.0.33</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.projectlombok</groupId>
-		    <artifactId>lombok</artifactId>
-		    <version>1.18.0</version>
-			<scope>provided</scope>
+			  <groupId>org.projectlombok</groupId>
+			  <artifactId>lombok</artifactId>
+			  <version>1.18.32</version>
+			  <scope>provided</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-compiler-plugin</artifactId>
+	      <version>3.11.0</version>
+	      <configuration>
+	        <fork>true</fork>
+	        <compilerArgs>
+	          <arg>--add-opens</arg>
+	          <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+	        </compilerArgs>
+	      </configuration>
+	    </plugin>
+  </plugins>
+</build>
 
 </project>
