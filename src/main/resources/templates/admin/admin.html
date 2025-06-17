@@ -1,13 +1,48 @@
+<!-- src/main/resources/templates/admin.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>관리자 페이지</title>
+    <title>관리자 기능 선택</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: '맑은 고딕', sans-serif;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 100px;
+            gap: 50px;
+        }
+        .btn-box {
+            border: 2px solid black;
+            padding: 40px 60px;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-box:hover {
+            background-color: #e0e0e0;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
 </head>
 <body>
-    <h1>관리자 기능 선택 테스트3</h1>
-    <ul>
-        <li><a th:href="@{admin/ODS}">주문 내역 보기</a></li>
-        <li><a th:href="@{/admin/menucontroller/menu_list}">메뉴 추가하기</a></li>
-    </ul>
+    <h1>관리자 기능 선택</h1>
+    <div class="btn-container">
+        <a th:href="@{/admin/orders}">
+            <div class="btn-box">주문 내역</div>
+        </a>
+        <a th:href="@{/admin/menucontroller/menus}">
+    		<div class="btn-box">메뉴 리스트</div>
+		</a>
+    </div>
 </body>
 </html>

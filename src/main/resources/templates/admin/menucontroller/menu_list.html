@@ -2,34 +2,133 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>메뉴 목록</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .add-button {
+            padding: 8px 16px;
+            border: 2px solid #020715;
+            background-color: #ffffff;
+            color: #007bff;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .add-button:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .action-buttons a {
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 0 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .edit-button {
+            background-color: #e7f1ff;
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+
+        .edit-button:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #ffe8e8;
+            color: #d72638;
+            border: 1px solid #d72638;
+        }
+
+        .delete-button:hover {
+            background-color: #d72638;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<h2>메뉴 목록</h2>
+<div class="container">
+    <h2>메뉴 목록</h2>
 
-<a th:href="@{/admin/menu/add}">메뉴 추가</a>
+    <div class="top-bar">
+        <a th:href="@{/admin/menucontroller/add}" class="add-button">➕ 메뉴 추가</a>
+    </div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>이름</th>
-        <th>영문이름</th>
-        <th>타입</th>
-        <th>가격</th>
-        <th>수정/삭제</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="menu : ${menus}">
-        <td th:text="${menu.menu_Name}"></td>
-        <td th:text="${menu.menu_Nameen}"></td>
-        <td th:text="${menu.type}"></td>
-        <td th:text="${menu.price}"></td>
-        <td>
-            <a th:href="@{|/admin/menu/edit/${menu.menu_Name}|}">수정</a>
-            <a th:href="@{|/admin/menu/delete/${menu.menu_Name}|}" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <th>이름</th>
+            <th>영문이름</th>
+            <th>타입</th>
+            <th>가격</th>
+            <th>수정/삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="menu : ${menus}">
+            <td th:text="${menu.menu_Name}"></td>
+            <td th:text="${menu.menu_Nameen}"></td>
+            <td th:text="${menu.type}"></td>
+            <td th:text="${menu.price}"></td>
+            <td class="action-buttons">
+                <a th:href="@{|/admin/menucontroller/edit/${menu.menu_Name}|}" class="edit-button">수정</a>
+                <a th:href="@{|/admin/menucontroller/delete/${menu.menu_Name}|}"
+                   class="delete-button"
+                   onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
