@@ -32,5 +32,5 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         super.onAuthenticationSuccess(request, response, authentication);
     }
-    //젠킨스 업데이트 테스트2
+    //젠킨스 업데이트 테스트3
 }
