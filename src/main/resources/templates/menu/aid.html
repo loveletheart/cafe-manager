@@ -10,43 +10,46 @@
             margin: 0;
             padding: 0;
             text-align: center;
-            background-color: white; /* Ensure the body background is white */
+            background-color: white;
         }
         .categories {
-            margin-top: 20px;
-            margin-bottom: 0px;
-            padding: 10px 0;
-            border-top: 3px solid rgba(255, 255, 255, 0.1); /* Border with white transparency */
-            border-bottom: 3px solid rgba(255, 255, 255, 0.1); /* Border with white transparency */
-            display: flex;
-            justify-content: space-around;
-            background-color: #cae1f2;
-        }
-        .categories a {
-            flex: 1;
-            margin: 0 10px;
-            text-decoration: none;
-            color: black;
-            font-size: 25px;
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            border: 1px solid #cae1f2;; /* Set border color to white */
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #cae1f2;
-            transition: background-color 0.3s, padding 0.3s; /* Add transition for padding */
-        }
+		    margin-top: 20px;
+		    margin-bottom: 0;
+		    padding: 10px 0;
+		    border-top: 3px solid rgba(255, 255, 255, 0.1);
+		    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+		    display: flex;
+		    justify-content: space-evenly; /* 버튼 간 간격 균등 배치 */
+		    align-items: center;
+		    width: 100vw; /* 화면 너비 전체 사용 */
+		    background-color: #cae1f2;
+		    gap: 5px; /* 버튼 간격 */
+		}
+		.categories a {
+		    flex: 1;
+		    text-decoration: none;
+		    color: black;
+		    font-size: 25px;
+		    font-family: 'Arial', sans-serif;
+		    font-weight: bold;
+		    border: 1px solid #cae1f2;
+		    border-radius: 15px;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    background-color: #cae1f2;
+		    transition: background-color 0.3s, padding 0.3s;
+		    padding: 10px 0;
+		}
         .categories a:hover {
             text-decoration: underline;
             text-underline-position : from-font;
         }
         .categories a.active {
-            background-color: white; /* Active category background color */
+            background-color: white;
             color: black;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 0 !important; /* Remove bottom margin */
+            margin-bottom: 0 !important;
         }
         .menu-grid {
             display: grid;
@@ -62,7 +65,7 @@
         }
         .pagination li {
 		    display: inline-block;
-		    margin-right: 10px; /* Adjust the spacing as needed */
+		    margin-right: 10px;
 		}
 		.pagination li a {
 			text-decoration:none;
@@ -93,7 +96,7 @@
 		}
     </style>
     <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body>
     <h1>Menu</h1>
@@ -108,10 +111,10 @@
     
     <div class="menu-grid">
         <div class="menu-item" th:each="menu : ${menus}">
-        	<img th:src="@{|./../images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:auto;"><!-- 표현식 처리를 해결하기 위해 리터널 블록 사용 -->
-            <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;">Menu Name</span></p>
+        	<img th:src="@{|/images/${menu.menu_Nameen}.jpg|}" th:alt="${menu.menu_Nameen}" style="width:300px;height:auto;">
+            <p><span th:text="${menu.menu_Name}" style="font-size: 24px; font-weight: bold;">Menu Name</span></p>
 			<p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span style="font-size: 1em;"> ₩</span></p>
-            <button class="add-to-cart-button" th:data-menuName='${menu.menuName}'>장바구니에 담기</button>
+            <button class="add-to-cart-button" th:data-menuName='${menu.menu_Name}'>장바구니에 담기</button>
         </div>
     </div>
     
@@ -151,9 +154,9 @@
 	    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 	    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 		$(document).ready(function() {
-	        // addToCart 함수 정의 //git,젠킨스 테스트 진짜 마지막
+	        // addToCart 함수 정의
 	        window.addToCart = function(menuName) {
-	            $.ajax({ 
+	            $.ajax({
 	                type: 'POST',
 	                url: '/menu/add',
 	                data: JSON.stringify({ menuName: menuName }),
