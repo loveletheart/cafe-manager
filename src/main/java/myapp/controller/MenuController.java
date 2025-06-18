@@ -90,8 +90,13 @@ public class MenuController {
     public String showCart(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();  // 로그인된 사용자 ID 가져오기
+        
         List<Cart> cartItems = cartRepository.findByUserId(userId);  // userId로 장바구니 아이템을 조회
         model.addAttribute("cartItems", cartItems);
+        
+        int totalSum = menuService.calculateTotalSum(userId);
+        model.addAttribute("totalPrice", totalSum);  // 전체 금액 합산
+        
         return "menu/cart";  // 장바구니 페이지로 리턴
     }
 
