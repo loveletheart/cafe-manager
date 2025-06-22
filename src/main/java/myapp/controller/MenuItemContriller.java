@@ -44,13 +44,37 @@ public class MenuItemContriller {
             model.addAttribute("actionUrl", "/admin/menucontroller/add");
             return "admin/menucontroller/menu_form";
         }
+    	
+    	String originalFilename = imageFile.getOriginalFilename();
+        String contentType = imageFile.getContentType();
 
-        // 이미지 저장 처리
-        if (!imageFile.isEmpty()) {
-            String fileName = menu.getMenu_Name() + "_" + imageFile.getOriginalFilename();
-            Path savePath = Paths.get("src/main/resources/static/images", fileName);
-            Files.copy(imageFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
+        if (originalFilename == null ||
+            !originalFilename.toLowerCase().endsWith(".jpg") ||
+            !"image/jpeg".equals(contentType)) {
+
+            // 여기서 예외 대신 다시 form으로 돌아감
+            model.addAttribute("error", "JPG 파일만 업로드 가능합니다.");
+            model.addAttribute("menu", menu);
+            model.addAttribute("actionUrl", "/admin/menucontroller/add");
+            return "admin/menucontroller/menu_form";
         }
+    	
+        // 이미지 저장 처리
+    	if (!imageFile.isEmpty()) {
+    	    // 원본 파일명에서 확장자 추출
+    	    String extension = ""; // 확장자 초기화
+
+    	    int dotIndex = originalFilename.lastIndexOf('.');
+    	    if (dotIndex > 0) {
+    	        extension = originalFilename.substring(dotIndex); // .jpg, .png 등
+    	    }
+
+    	    // 영어 메뉴 이름 + 확장자로 저장
+    	    String fileName = menu.getMenu_Nameen().replaceAll("[^a-zA-Z0-9]", "_") + extension;
+
+    	    Path savePath = Paths.get("src/main/resources/static/images", fileName);
+    	    Files.copy(imageFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
+    	}
 
         menuItemService.addMenu(menu);
         return "redirect:/admin/menucontroller/menus";
