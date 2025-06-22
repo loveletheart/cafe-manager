@@ -12,6 +12,7 @@
             align-items: center;
             min-height: 100vh;
             flex-direction: column;
+            padding-bottom: 150px;
         }
 
         .container {
@@ -99,10 +100,16 @@
 <body>
 <div class="container">
     <h2>메뉴 목록</h2>
-
     <div class="top-bar">
         <a th:href="@{/admin/menucontroller/add}" class="add-button">➕ 메뉴 추가</a>
     </div>
+    <script th:inline="javascript">
+        var alertMessage = /*[[${complete}]]*/ ''; // Thymeleaf를 사용하여 데이터 가져오기
+
+        if (alertMessage) {
+            alert(alertMessage);
+        }
+    </script>
 
     <table>
         <thead>

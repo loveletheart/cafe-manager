@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class MenuItemContriller {
 	public String showAddForm(Model model) {
 	    model.addAttribute("menu", new Menu());
 	    model.addAttribute("actionUrl", "/admin/menucontroller/add");
-	    return "admin/menucontroller/menu_form";
+	    return "admin/menucontroller//menu_list";
 	}
 
     @PostMapping("/add")
@@ -63,19 +64,21 @@ public class MenuItemContriller {
             model.addAttribute("actionUrl", "/admin/menucontroller/edit/" + menuName);
             return "admin/menucontroller/menu_form";
         } else {
-            return "redirect:/admin/menucontroller/menus"; // 잘못된 접근시 목록으로
+        	 model.addAttribute("error", "수정이 불가합니다");
+        	 return "admin/menucontroller/menu_form";
         }
     }
 
     @PostMapping("/edit/{menuName}")
     public String updateMenu(@PathVariable String menuName, @ModelAttribute Menu menu) {
     	menuItemService.updateMenu(menuName, menu);
-        return "redirect:/admin/menucontroller/menu_list";
+        return "redirect:/admin/menucontroller/menus";
     }
 
     @GetMapping("/delete/{menuName}")
-    public String deleteMenu(@PathVariable String menuName) {
+    public String deleteMenu(@PathVariable String menuName,RedirectAttributes redirectAttributes) {
     	menuItemService.deleteMenu(menuName);
-        return "redirect:/admin/menucontroller/menu_list";
+    	redirectAttributes.addFlashAttribute("complete", "삭제가 완료되었습니다.");
+        return "redirect:/admin/menucontroller/menus";
     }
 }
