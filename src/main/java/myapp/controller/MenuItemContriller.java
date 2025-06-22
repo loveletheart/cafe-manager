@@ -31,7 +31,7 @@ public class MenuItemContriller {
 	public String showAddForm(Model model) {
 	    model.addAttribute("menu", new Menu());
 	    model.addAttribute("actionUrl", "/admin/menucontroller/add");
-	    return "admin/menucontroller//menu_list";
+	    return "admin/menucontroller/menu_form";
 	}
 
     @PostMapping("/add")
@@ -41,6 +41,7 @@ public class MenuItemContriller {
     	if (menuItemService.existsByMenuName(menu.getMenu_Name())) {
             model.addAttribute("error", "이미 존재하는 메뉴 이름입니다.");
             model.addAttribute("menu", menu);
+            model.addAttribute("actionUrl", "/admin/menucontroller/add");
             return "admin/menucontroller/menu_form";
         }
 
@@ -49,11 +50,10 @@ public class MenuItemContriller {
             String fileName = menu.getMenu_Name() + "_" + imageFile.getOriginalFilename();
             Path savePath = Paths.get("src/main/resources/static/images", fileName);
             Files.copy(imageFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
-            // 필요시 menu.setImagePath("/images/" + fileName); 등 저장
         }
 
         menuItemService.addMenu(menu);
-        return "redirect:/admin/menucontroller/menu";
+        return "redirect:/admin/menucontroller/menus";
     }
 
     @GetMapping("/edit/{menuName}")
