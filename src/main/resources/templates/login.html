@@ -10,8 +10,13 @@
     }
     body {
         font-size: 14px;
-        font-family: 'Roboto', sans-serif;
-    }
+	    font-family: 'Roboto', sans-serif;
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    height: 60vh;      
+	    margin: 0;        
+	}
     .login-wrapper {
         width: 400px;
         height: 400px; /* 높이 증가 */
@@ -62,7 +67,7 @@
 </head>
 <body>
     <div class="login-wrapper">
-        <h2>Login123</h2>
+        <h2>Login</h2>
         <form method="post" th:action="@{/login}" id="login-form">
 		    <!-- CSRF token -->
 		    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

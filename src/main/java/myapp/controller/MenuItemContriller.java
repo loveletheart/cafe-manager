@@ -26,11 +26,12 @@ public class MenuItemContriller {
         return "admin/menucontroller/menu_list";
     }
     
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("menu", new Menu());
-        return "admin/menucontroller/menu_form";
-    }
+	@GetMapping("/add")
+	public String showAddForm(Model model) {
+	    model.addAttribute("menu", new Menu());
+	    model.addAttribute("actionUrl", "/admin/menucontroller/add");
+	    return "admin/menucontroller/menu_form";
+	}
 
     @PostMapping("/add")
     public String addMenu(@ModelAttribute Menu menu,
@@ -51,14 +52,19 @@ public class MenuItemContriller {
         }
 
         menuItemService.addMenu(menu);
-        return "redirect:/admin/menu";
+        return "redirect:/admin/menucontroller/menu";
     }
 
     @GetMapping("/edit/{menuName}")
     public String showEditForm(@PathVariable String menuName, Model model) {
         Optional<Menu> menu = menuItemService.getMenuByName(menuName);
-        menu.ifPresent(value -> model.addAttribute("menu", value));
-        return "admin/menucontroller/menu_list";
+        if (menu.isPresent()) {
+            model.addAttribute("menu", menu.get());
+            model.addAttribute("actionUrl", "/admin/menucontroller/edit/" + menuName);
+            return "admin/menucontroller/menu_form";
+        } else {
+            return "redirect:/admin/menucontroller/menus"; // 잘못된 접근시 목록으로
+        }
     }
 
     @PostMapping("/edit/{menuName}")

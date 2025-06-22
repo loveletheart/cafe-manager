@@ -37,6 +37,11 @@
 		    background-color: #fff;
 		    margin-bottom: 20px; 
 		}
+		
+		input[type="number"]::-webkit-inner-spin-button {
+		    -webkit-appearance: none;
+		    margin: 0;
+		}
 
         button {
             background-color: #4CAF50;
@@ -80,8 +85,7 @@
     <p th:text="${error}"></p>
 </div>
 
-<form th:action="@{${menu.menu_Name == null} ? '/admin/menu/add' : '/admin/menu/edit/' + ${menu.menu_Name}}"
-      th:object="${menu}" method="post" enctype="multipart/form-data">
+<form th:action="@{${actionUrl}}" th:object="${menu}" method="post" enctype="multipart/form-data">
 
     <label>메뉴 이름 (PK)</label>
     <input type="text" th:field="*{menu_Name}" th:readonly="${menu.menu_Name != null}" required/>
