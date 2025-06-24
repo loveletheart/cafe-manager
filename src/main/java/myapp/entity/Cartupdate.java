@@ -1,6 +1,6 @@
 package myapp.entity;
 
-public class cartupdate {
+public class Cartupdate {
     private String id; // Cart 엔티티의 ID
     private int count; // 업데이트할 수량
 

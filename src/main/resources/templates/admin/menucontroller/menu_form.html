@@ -79,7 +79,7 @@
     </style>
 </head>
 <body>
-<h2 th:text="${menu.menu_Name == null ? '메뉴 추가' : '메뉴 수정'}"></h2>
+<h2 th:text="${menu.menuName == null ? '메뉴 추가' : '메뉴 수정'}"></h2>
 
 <div th:if="${error}" class="error">
     <p th:text="${error}"></p>
@@ -88,10 +88,10 @@
 <form th:action="@{${actionUrl}}" th:object="${menu}" method="post" enctype="multipart/form-data">
 
     <label>메뉴 이름 (PK)</label>
-    <input type="text" th:field="*{menu_Name}" th:readonly="${menu.menu_Name != null}" required/>
+    <input type="text" th:field="*{menuName}" th:readonly="${menu.menuName != null}" required/>
 
     <label>영문 이름</label>
-    <input type="text" th:field="*{menu_Nameen}" required/>
+    <input type="text" th:field="*{menuNameen}" required/>
 
     <label>타입</label>
     <input type="text" th:field="*{type}" required/>

@@ -38,7 +38,7 @@ public class MenuItemContriller {
     public String addMenu(@ModelAttribute Menu menu,
             @RequestParam("image") MultipartFile imageFile,
             Model model) throws IOException {
-    	if (menuItemService.existsByMenuName(menu.getMenu_Name())) {
+    	if (menuItemService.existsByMenuName(menu.getMenuName())) {
             model.addAttribute("error", "이미 존재하는 메뉴 이름입니다.");
             model.addAttribute("menu", menu);
             model.addAttribute("actionUrl", "/admin/menucontroller/add");
@@ -70,7 +70,7 @@ public class MenuItemContriller {
     	    }
 
     	    // 영어 메뉴 이름 + 확장자로 저장
-    	    String fileName = menu.getMenu_Nameen().replaceAll("[^a-zA-Z0-9]", "_") + extension;
+    	    String fileName = menu.getMenuName().replaceAll("[^a-zA-Z0-9]", "_") + extension;
 
     	    Path savePath = Paths.get("src/main/resources/static/images", fileName);
     	    Files.copy(imageFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);

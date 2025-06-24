@@ -28,31 +28,35 @@ public class MenuService {
     }
 
     // 장바구니에 메뉴 추가
-    public boolean addToCart(String menuName) {
+    public boolean addToCart(Cart cart) {
+        String userId = cart.getUserId();
+        String menuName = cart.getMenuName();
+
         Optional<Menu> menuItem = menuRepository.findById(menuName);
-        if (!menuItem.isPresent()) {
-            return false;
-        }
+        if (!menuItem.isPresent()) return false;
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName(); // 현재 로그인한 사용자의 ID
+        // 기존 장바구니에 같은 메뉴+옵션이 있는지 확인
+        List<Cart> existingCart = cartRepository.findByUserId(userId);
+        Optional<Cart> sameItem = existingCart.stream()
+            .filter(c -> c.getMenuName().equals(menuName)
+                      && c.getTemperature().equals(cart.getTemperature())
+                      && c.getBeanType().equals(cart.getBeanType())
+                      && c.getCupType().equals(cart.getCupType())
+                      && c.getSyrup().equals(cart.getSyrup()))
+            .findFirst();
 
-        List<Cart> existingCart = cartRepository.findByUserId(userId);  // userId로 장바구니 항목 찾기
-        Optional<Cart> cart = existingCart.stream()
-                                          .filter(c -> c.getMenuName().equals(menuName))
-                                          .findFirst();
-
-        if (cart.isPresent()) {
-            cart.get().setCount(cart.get().getCount() + 1); // 이미 있으면 개수 증가
-            cartRepository.save(cart.get());
+        if (sameItem.isPresent()) {
+            sameItem.get().setCount(sameItem.get().getCount() + cart.getCount());
+            cartRepository.save(sameItem.get());
         } else {
             Menu menu = menuItem.get();
-            Cart newCart = new Cart(userId, menu.getMenu_Name(), menu.getMenu_Nameen(), 1, menu.getPrice());//없으면 새로 추가
-            cartRepository.save(newCart);
+            cart.setPrice(menu.getPrice());  // 기본 메뉴 가격 설정
+            cartRepository.save(cart);       // 새로 저장
         }
 
         return true;
     }
+
     
     //사용자의 아이디에 따라서 데이터베이스cart에 있는 데이터를 다르게 가지고 옴
     public List<Cart> getCartItemsByUser(String userId) {
@@ -85,5 +89,9 @@ public class MenuService {
     public int getPrice(String userId,String menuName) {
         Optional<Cart> menuData = cartRepository.findByuserIdAndMenuName(userId, menuName);
         return menuData.map(Cart::getPrice).orElse(0);
+    }
+
+    public Menu findMenuByName(String menuName) {
+        return menuRepository.findByMenuName(menuName).orElse(null);
     }
 }

@@ -1,68 +1,35 @@
 package myapp.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Table(name = "cart")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Cart {
 
     @Id
-    private String menuName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String userId;
     
-    private String userId;  // 복합키 또는 간단한 id로 사용
-    private String menuNameen;
-    private int count;
-    private int price;
-
-    // 기본 생성자
-    public Cart() {}
-
-    // 모든 필드를 포함한 생성자
+    private String menuName; //메뉴 이름
+    private String menuNameen; //메뉴 이름
+    private String temperature; // HOT or ICE
+    private String beanType;    // 원두 이름
+    private String cupType;     // 매장/일회용/개인컵
+    private String syrup;       // 시럽 종류
+    private int count;          // 수량
+    private int price;          // 개당 가격
+    private String beanDescription; // 원두 설명
+    
     public Cart(String userId, String menuName, String menuNameen, int count, int price) {
         this.userId = userId;
         this.menuName = menuName;
         this.menuNameen = menuNameen;
         this.count = count;
-        this.price = price;
-    }
-
-    // 게터 및 세터 메서드들
-    public String getuserId() {
-        return userId;
-    }
-
-    public void setuserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getMenuName() {
-        return menuName;
-    }
-
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
-    }
-
-    public String getMenuNameen() {
-        return menuNameen;
-    }
-
-    public void setMenuNameen(String menuNameen) {
-        this.menuNameen = menuNameen;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
         this.price = price;
     }
 }

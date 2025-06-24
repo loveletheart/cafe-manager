@@ -3,6 +3,7 @@ package myapp.controller;
 import myapp.entity.*;
 import myapp.service.MenuService;
 import myapp.repository.CartRepository;
+import myapp.repository.MenuRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,22 +66,31 @@ public class MenuController {
 
         return modelAndView;
     }
+    
+    /**
+     * 메뉴 옵션 설정
+     * 사용자가 '메뉴 선택'버튼 클릭시 호출
+     */
+    @GetMapping("/order/{menuName}")
+    public String showMenuDetail(@PathVariable String menuName, Model model) {
+    	Menu menu = menuService.findMenuByName(menuName);
+        model.addAttribute("menu", menu);
+        return "menu/options";
+    }
 
     /**
      * 장바구니 추가 (AJAX 요청 처리)
      * 사용자가 '장바구니 추가' 버튼을 클릭하면 호출됨
      */
-    @PostMapping("/add")
-    public ResponseEntity<String> addToCart(@RequestBody Map<String, String> request) {
-        String menuName = request.get("menuName");
+    @PostMapping("/options/add")
+    public String addToCartWithOptions(@ModelAttribute Cart cart) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        cart.setUserId(userId);
 
-        boolean result = menuService.addToCart(menuName);
+        menuService.addToCart(cart);
 
-        if (result) {
-            return ResponseEntity.ok("상품이 장바구니에 추가되었습니다.");
-        } else {
-            return ResponseEntity.status(500).body("장바구니 추가 실패");
-        }
+        return "redirect:/menu";
     }
 
     /**

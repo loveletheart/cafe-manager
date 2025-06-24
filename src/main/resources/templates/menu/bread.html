@@ -111,10 +111,10 @@
     
     <div class="menu-grid">
         <div class="menu-item" th:each="menu : ${menus}">
-        	<img th:src="@{|/images/${menu.menu_Nameen}.jpg|}" th:alt="${menu.menu_Nameen}" style="width:300px;height:300px;">
-            <p><span th:text="${menu.menu_Name}" style="font-size: 24px; font-weight: bold;">Menu Name</span></p>
+        	<img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
+            <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;">Menu Name</span></p>
 			<p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span style="font-size: 1em;"> ₩</span></p>
-            <button class="add-to-cart-button" th:data-menuName='${menu.menu_Name}'>장바구니에 담기</button>
+            <button class="add-to-cart-button" th:data-menuName='${menu.menuName}'>장바구니에 담기</button>
         </div>
     </div>
     
