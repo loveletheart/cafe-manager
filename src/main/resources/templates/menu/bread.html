@@ -1,184 +1,215 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Menu</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery가 반드시 먼저 로드되어야 함 -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background-color: white;
-        }
-        .categories {
-		    margin-top: 20px;
-		    margin-bottom: 0;
-		    padding: 10px 0;
-		    border-top: 3px solid rgba(255, 255, 255, 0.1);
-		    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
-		    display: flex;
-		    justify-content: space-evenly; /* 버튼 간 간격 균등 배치 */
-		    align-items: center;
-		    width: 100vw; /* 화면 너비 전체 사용 */
-		    background-color: #cae1f2;
-		    gap: 5px; /* 버튼 간격 */
-		}
-		.categories a {
-		    flex: 1;
-		    text-decoration: none;
-		    color: black;
-		    font-size: 25px;
-		    font-family: 'Arial', sans-serif;
-		    font-weight: bold;
-		    border: 1px solid #cae1f2;
-		    border-radius: 15px;
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    background-color: #cae1f2;
-		    transition: background-color 0.3s, padding 0.3s;
-		    padding: 10px 0;
-		}
-        .categories a:hover {
-            text-decoration: underline;
-            text-underline-position : from-font;
-        }
-        .categories a.active {
-            background-color: white;
-            color: black;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 0 !important;
-        }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            padding: 20px;
-        }
-        .menu-item {
-            border: 1px solid gray;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        .pagination li {
-		    display: inline-block;
-		    margin-right: 10px;
-		}
-		.pagination li a {
-			text-decoration:none;
-			font-size: 40px;
-		}
-		.cart-button {
-		    display: inline-block;         /* 버튼처럼 보이게 설정 */
-		    padding: 12px 24px;            /* 버튼 내부 여백 */
-		    font-size: 50px;               /* 글자 크기 */
-		    color: white;                  /* 글자 색상 */
-		    background-color: #ff6666;     /* 버튼 배경색 (붉은색 계열) */
-		    border: none;                  /* 테두리 제거 */
-		    border-radius: 20px;           /* 모서리 둥글게 */
-		    text-decoration: none;         /* 링크 밑줄 제거 */
-		    cursor: pointer;               /* 커서를 포인터로 변경 */
-		    transition: background-color 0.3s ease; /* 호버 시 배경색 전환 효과 */
-		}
-		.add-to-cart-button {
-		    border-radius: 20px; /* 모서리를 둥글게 */
-		    font-size: 20px; /* 글씨 크기 */
-		    font-weight: bold; /* 글씨 굵게 */
-		    background-color: white; /* 버튼 배경색 */
-		    color: #4682B4; /* 글씨 색상 */
-		    border: 1px solid #4682B4; /* 얇은 하늘색 테두리 */
-		    padding: 10px 20px; /* 버튼 내부 여백 */
-		    cursor: pointer; /* 클릭 가능하도록 설정 */
-		    transition: all 0.3s ease; /* 부드러운 변화 효과 */
-		}
-    </style>
-    <meta name="_csrf" th:content="${_csrf.token}" />
-	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <meta charset="UTF-8">
+  <title>Menu</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: white;
+  }
+
+  .categories {
+    margin-top: 20px;
+    margin-bottom: 0;
+    padding: 10px 0;
+    border-top: 3px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-evenly;
+    width: 100vw;
+    background-color: #cae1f2;
+    gap: 5px;
+  }
+
+  .categories a {
+    flex: 1;
+    text-decoration: none;
+    color: black;
+    font-size: 25px;
+    font-weight: bold;
+    border: 1px solid #cae1f2;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cae1f2;
+    padding: 10px 0;
+  }
+
+  .categories a.active {
+    background-color: white;
+    color: black;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 15px 20px 15px; /* 좌우 여백 줌 */
+  }
+
+  .menu-item {
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .cart-button {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 50px;
+    color: white;
+    background-color: #ff6666;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .add-to-cart-button {
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: white;
+    color: #4682B4;
+    border: 1px solid #4682B4;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  /* 모달 기본 숨김 처리 및 스타일 */
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+  }
+
+  .modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-    <h1>Menu</h1>
+  <h1>Menu</h1>
 
-    <div class="categories">
-        <a th:href="@{/menu/coffee}" th:text="'커피'" th:classappend="${activeCategory == 'coffee'} ? 'active'"></a>
-        <a th:href="@{/menu/aid}" th:text="'에이드'" th:classappend="${activeCategory == 'aid'} ? 'active'"></a>
-        <a th:href="@{/menu/cookie}" th:text="'쿠키'" th:classappend="${activeCategory == 'cookie'} ? 'active'"></a>
-        <a th:href="@{/menu/bread}" th:text="'빵'" th:classappend="${activeCategory == 'bread'} ? 'active'"></a>
-        <a th:href="@{/menu/cake}" th:text="'케이크'" th:classappend="${activeCategory == 'cake'} ? 'active'"></a>
+  <div class="categories">
+    <a th:href="@{/menu/coffee}" th:text="'커피'" th:classappend="${activeCategory == 'coffee'} ? 'active'"></a>
+    <a th:href="@{/menu/aid}" th:text="'에이드'" th:classappend="${activeCategory == 'aid'} ? 'active'"></a>
+    <a th:href="@{/menu/cookie}" th:text="'쿠키'" th:classappend="${activeCategory == 'cookie'} ? 'active'"></a>
+    <a th:href="@{/menu/bread}" th:text="'빵'" th:classappend="${activeCategory == 'bread'} ? 'active'"></a>
+    <a th:href="@{/menu/cake}" th:text="'케이크'" th:classappend="${activeCategory == 'cake'} ? 'active'"></a>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-item" th:each="menu : ${menus}">
+      <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
+      <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;"></span></p>
+      <p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span> ₩</span></p>
+      <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
     </div>
-    
-    <div class="menu-grid">
-        <div class="menu-item" th:each="menu : ${menus}">
-        	<img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
-            <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;">Menu Name</span></p>
-			<p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span style="font-size: 1em;"> ₩</span></p>
-            <button class="add-to-cart-button" th:data-menuName='${menu.menuName}'>장바구니에 담기</button>
-        </div>
+  </div>
+
+  <div style="margin-top: 20px; text-align: center;">
+    <a href="/menu/cart" class="cart-button">장바구니</a>
+  </div>
+
+  <!-- 옵션 모달 -->
+  <div id="optionModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="optionFormContainer">
+      </div>
     </div>
-    
-    <div th:if="${totalPages > 1}">
-        <nav>
-           <div class="pagination">
-			    <ul>
-			        <!-- Previous Page Link -->
-			        <li th:if="${currentPage > 0}">
-						<a th:href="@{|/menu/${activeCategory}?page=${currentPage - 1}|}" >＜</a>
-			        </li>
-			
-			        <!-- Page Number Links -->
-			        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-			            <a th:href="@{|/menu/${activeCategory}?page=${i}|}" th:text="${i + 1}" th:classappend="${i == currentPage} ? ' active'"></a>
-			        </li>
-			
-			        <!-- Next Page Link -->
-			        <li th:if="${currentPage < totalPages - 1}">
-			            <a th:href="@{|/menu/${activeCategory}?page=${currentPage + 1}|}">＞</a>
-			        </li>
-			    </ul>
-			</div>
-		</nav>
-    </div>
-    
-    <div th:if="${menus.isEmpty()}">
-        <p>No menu items found</p>
-    </div>
-    
-    <!-- cart(장바구니)페이지로 이동하는 버튼 -->
-    <div style="margin-top: 20px; text-align: center;">
-        <a href="/menu/cart" class="cart-button">장바구니</a>
-    </div>
-    
-    <script>
-	    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-	    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-		$(document).ready(function() {
-	        // addToCart 함수 정의
-	        window.addToCart = function(menuName) {
-	            $.ajax({
-	                type: 'POST',
-	                url: '/menu/add',
-	                data: JSON.stringify({ menuName: menuName }),
-	                contentType: 'application/json',
-	                beforeSend: function(xhr) {
-	                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 추가
-	                },
-	                success: function(response) {
-	                    alert("상품이 장바구니에 추가되었습니다.");
-	                },
-	                error: function(xhr, status, error) {
-	                    alert("장바구니 추가에 실패했습니다.");
-	                }
-	            });
-	        };
-	
-		// 버튼 클릭 이벤트 바인딩 (onclick을 대체)
-		$('button').click(function() {
-			const menuName = $(this).attr('data-menuName');  // 버튼의 data 속성에서 menuName 가져오기
-		    addToCart(menuName);
-		    });
-		});
-    </script>
+  </div>
+
+  <script>
+  var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+  // options.css 동적 로드 함수
+  function loadOptionsCss() {
+    if (!document.getElementById('optionsCss')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/options.css';  // 실제 경로에 맞게 수정하세요
+      link.id = 'optionsCss';
+      document.head.appendChild(link);
+    }
+  }
+
+  // options.css 제거 함수
+  function removeOptionsCss() {
+    const link = document.getElementById('optionsCss');
+    if (link) link.remove();
+  }
+
+  // 모달 열기 함수
+  function openModal() {
+    loadOptionsCss();
+    $('#optionModal').fadeIn();
+  }
+
+  // 모달 닫기 함수
+  function closeModal() {
+    $('#optionModal').fadeOut();
+    removeOptionsCss();
+  }
+
+  $(document).ready(function () {
+    $('.add-to-cart-button').click(function () {
+      const menuName = $(this).data('menuname');
+      if (!menuName) {
+        alert('menuName이 비어 있습니다.');
+        return;
+      }
+
+      $.ajax({
+        url: '/menu/order/' + encodeURIComponent(menuName),
+        method: 'GET',
+        success: function (data) {
+          $('#optionFormContainer').html(data);
+          openModal();
+        },
+        error: function () {
+          alert('옵션 정보를 불러오지 못했습니다.');
+        }
+      });
+    });
+
+    // 모달 및 닫기 버튼 클릭 시 닫기
+    $('.close, #optionModal').click(function (e) {
+      if (e.target === this || $(e.target).hasClass('close')) {
+        closeModal();
+      }
+    });
+  });
+</script>
 </body>
 </html>

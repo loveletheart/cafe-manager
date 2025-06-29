@@ -75,7 +75,7 @@ public class MenuController {
     public String showMenuDetail(@PathVariable String menuName, Model model) {
     	Menu menu = menuService.findMenuByName(menuName);
         model.addAttribute("menu", menu);
-        return "menu/options";
+        return "menu/options :: optionForm"; // HTML 조각만 반환 (Thymeleaf fragment)
     }
 
     /**

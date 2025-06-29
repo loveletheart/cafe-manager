@@ -1,289 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8" />
-<title>Menu</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<meta name="_csrf" th:content="${_csrf.token}" />
-<meta name="_csrf_header" th:content="${_csrf.headerName}" />
-<style>
-  body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9f9f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  form {
-    background: white;
-    padding: 30px 50px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    max-width: 480px;
-    width: auto;
-    box-sizing: border-box;
-    text-align: center;
-    margin: 40px auto;
-  }
-
-  label {
-    font-weight: 600;
-    margin-top: 20px;
-    display: block;
-    margin-bottom: 6px; /* 여백을 살짝 줄임 */
-    color: #333;
-    font-size: 1.1em;
-  }
-
-  /* 컵 종류 제목(label)과 버튼 그룹 사이 여백 더 줄임 */
-  label:nth-of-type(3) {
-    margin-bottom: 4px;
-  }
-
-  /* 버튼 그룹 - 한 줄에 쭉 나오고 너비는 내용에 따라 자동 확장 */
-  .toggle-group,
-  .syrup-group {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: nowrap;
-    padding-bottom: 6px;
-    margin-bottom: 24px;
-  }
-
-  /* 토글 버튼 공통 스타일 */
-  input[type="radio"],
-  input[type="checkbox"] {
-    display: none;
-  }
-
-  .toggle-label {
-    min-width: 80px;
-    padding: 14px 0;
-    background: #eee;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    user-select: none;
-    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    text-align: center;
-    font-size: 1.1em;
-    letter-spacing: 0.03em;
-  }
-
-  .toggle-label:hover {
-    background: #ddd;
-  }
-
-  /* 선택된 버튼 스타일 - 그림자 제거, 패딩 위아래 축소 */
-  input[type="radio"]:checked + .toggle-label,
-  input[type="checkbox"]:checked + .toggle-label {
-    background: #5c85d6;
-    color: white;
-    box-shadow: none;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  /* 원두 설명 텍스트 - 좌측 정렬 */
-  .bean-description {
-    font-weight: normal;
-    font-size: 0.9em;
-    color: #666;
-    margin-left: 8px;
-  }
-
-  /* 원두 라디오 선택 스타일 - 좌측 정렬 */
-  .bean-option {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
-  .bean-option input[type="radio"] {
-    display: none;
-  }
-
-  .bean-option label {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-  }
-
-  .bean-option input[type="radio"]:checked + label {
-    color: #5c85d6;
-  }
-
-  /* 수량 조절 컨테이너 */
-  .quantity-container {
-    margin-top: 20px;
-    margin-bottom: 30px; /* 장바구니 버튼과의 여백 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    border: 2px solid #5c85d6;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  /* 수량 버튼 */
-  .qty-btn {
-    width: 46px;
-    height: 46px;
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #5c85d6;
-    background: white;
-    border: none;
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s, color 0.3s;
-  }
-
-  .qty-btn:hover {
-    background: #5c85d6;
-    color: white;
-  }
-
-  /* 수량 인풋 */
-  input[type="number"][name="count"] {
-    width: 60px;
-    height: 46px;
-    text-align: center;
-    font-size: 1.3em;
-    border: none;
-    outline: none;
-    -moz-appearance: textfield;
-    border-left: 2px solid #5c85d6;
-    border-right: 2px solid #5c85d6;
-  }
-
-  /* 숫자 인풋에 기본 스피너 제거 (크롬, 파이어폭스) */
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-  }
-
-  /* 장바구니 담기 버튼 */
-  button[type="submit"] {
-    background-color: #5c85d6;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.2em;
-    font-weight: 700;
-    padding: 14px 30px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  button[type="submit"]:hover {
-    background-color: #3f66c1;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>옵션 폼</title>
+  <link rel="stylesheet" href="/css/options.css" />
+  <style>
+    #bean-description {
+      min-height: 24px;
+      color: #555;
+      margin-top: 8px;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
-<form th:action="@{/menu/add}" method="post">
-  <input type="hidden" name="menuName" th:value="${menu.menuName}" />
+<div th:fragment="optionForm" class="modal-options">
+  <form th:action="@{/menu/options/add}" method="post" id="optionForm">
+    <input type="hidden" name="menuName" th:value="${menu.menuName}" />
+    <input type="hidden" name="menuNameen" th:value="${menu.menuNameen}" />
+    <input type="hidden" name="price" th:value="${menu.price}" />
 
-  <label>HOT/ICE 선택:</label>
-  <div class="toggle-group">
-    <input type="radio" id="tempHot" name="temperature" value="HOT" checked />
-    <label class="toggle-label" for="tempHot">HOT</label>
+    <p>온도 선택</p>
+    <div id="temp-error" style="color:red; display:none;">온도를 선택하세요</div>
+    <input type="radio" name="temperature" value="HOT" id="tempHot" />
+    <label for="tempHot" class="toggle-label">HOT</label>
 
-    <input type="radio" id="tempIce" name="temperature" value="ICE" />
-    <label class="toggle-label" for="tempIce">ICE</label>
-  </div>
+    <input type="radio" name="temperature" value="ICE" id="tempIce" />
+    <label for="tempIce" class="toggle-label">ICE</label>
+    
+    <p>원두 선택</p>
+    <div id="bean-error" style="color:red; display:none;">원두를 선택하세요</div>
 
-  <label>원두 선택:</label>
-  <div style="text-align: left; margin-top: 8px;">
-    <div th:each="bean : ${beans}" class="bean-option">
-      <input type="radio" id="bean-[[${bean.name}]]" name="bean" th:value="${bean.name}" required />
-      <label for="bean-[[${bean.name}]]">
-        <span th:text="${bean.name}"></span>
-        <span class="bean-description" th:text="' - ' + ${bean.description}"></span>
-      </label>
+    <!-- 원두 선택 라디오 버튼들, data-desc는 input에 직접 -->
+    <input type="radio" name="beanType" value="아라비카" id="beanArabica" data-desc="부드럽고 고소한 맛의 아라비카 원두입니다." />
+    <label for="beanArabica" class="toggle-label">아라비카</label>
+
+    <input type="radio" name="beanType" value="로부스타" id="beanRobusta" data-desc="강하고 진한 맛의 로부스타 원두입니다." />
+    <label for="beanRobusta" class="toggle-label">로부스타</label>
+
+    <input type="radio" name="beanType" value="에티오피아" id="beanEthiopia" data-desc="과일향과 산미가 뛰어난 에티오피아 원두입니다." />
+    <label for="beanEthiopia" class="toggle-label">에티오피아</label>
+
+    <!-- 원두 설명 표시 영역 -->
+    <p id="bean-description"></p>
+
+    <p>컵 선택</p>
+    <div id="cup-error" style="color:red; display:none;">컵을 선택하세요</div>
+
+    <input type="radio" name="cupType" value="매장컵" id="cupStore" />
+    <label for="cupStore" class="toggle-label">매장컵</label>
+
+    <input type="radio" name="cupType" value="일회용컵" id="cupDisposable" />
+    <label for="cupDisposable" class="toggle-label">일회용컵</label>
+
+    <input type="radio" name="cupType" value="개인컵" id="cupPersonal" />
+    <label for="cupPersonal" class="toggle-label">개인컵</label>
+
+    <p>시럽 선택</p>
+    <input type="checkbox" name="syrup" value="바닐라" id="syrupVanilla" />
+    <label for="syrupVanilla" class="toggle-label">바닐라</label>
+
+    <input type="checkbox" name="syrup" value="헤이즐넛" id="syrupHazelnuts" />
+    <label for="syrupHazelnuts" class="toggle-label">헤이즐넛</label>
+    
+    <input type="checkbox" name="syrup" value="카라멜" id="syrupCaramel" />
+    <label for="syrupCaramel" class="toggle-label">카라멜</label>
+    
+    <input type="checkbox" name="syrup" value="초코" id="syrupChocolate" />
+    <label for="syrupChocolate" class="toggle-label">초코</label>
+
+    <p>수량 선택:</p>
+    <div class="quantity-control">
+      <button type="button" id="minus-btn">-</button>
+      <input type="number" name="count" value="1" min="1" readonly />
+      <button type="button" id="plus-btn">+</button>
     </div>
-  </div>
 
-  <label>컵 종류:</label>
-  <div class="toggle-group">
-    <input type="radio" id="cupStore" name="cup" value="매장컵" checked />
-    <label class="toggle-label" for="cupStore">매장컵</label>
-
-    <input type="radio" id="cupDisposable" name="cup" value="일회용컵" />
-    <label class="toggle-label" for="cupDisposable">일회용컵</label>
-
-    <input type="radio" id="cupPersonal" name="cup" value="개인컵" />
-    <label class="toggle-label" for="cupPersonal">개인컵</label>
-  </div>
-
-  <label>시럽 선택:</label>
-  <div class="syrup-group">
-    <input type="checkbox" id="syrupVanilla" name="syrup" value="바닐라" />
-    <label class="toggle-label" for="syrupVanilla">바닐라</label>
-
-    <input type="checkbox" id="syrupHazelnut" name="syrup" value="헤이즐넛" />
-    <label class="toggle-label" for="syrupHazelnut">헤이즐넛</label>
-
-    <input type="checkbox" id="syrupCaramel" name="syrup" value="카라멜" />
-    <label class="toggle-label" for="syrupCaramel">카라멜</label>
-
-    <input type="checkbox" id="syrupChoco" name="syrup" value="초코" />
-    <label class="toggle-label" for="syrupChoco">초코</label>
-  </div>
-
-  <label>수량:</label>
-  <div class="quantity-container">
-    <button type="button" class="qty-btn" id="qtyMinus">-</button>
-    <input type="number" name="count" value="1" min="1" required />
-    <button type="button" class="qty-btn" id="qtyPlus">+</button>
-  </div>
-
-  <button type="submit">장바구니에 담기</button>
-</form>
-
-<script>
-  $(function () {
-    const $qtyInput = $('input[name="count"]');
-
-    $('#qtyMinus').click(function () {
-      let currentVal = parseInt($qtyInput.val());
-      if (currentVal > 1) {
-        $qtyInput.val(currentVal - 1);
-      }
-    });
-
-    $('#qtyPlus').click(function () {
-      let currentVal = parseInt($qtyInput.val());
-      $qtyInput.val(currentVal + 1);
-    });
-
-    $qtyInput.on('input', function () {
-      // 숫자만 허용, 1 이상 강제
-      let val = this.value.replace(/[^0-9]/g, '');
-      if (val === '' || val === '0') {
-        val = '1';
-      }
-      this.value = val;
-    });
-  });
-</script>
+    <button type="submit" class="add-to-cart-button">장바구니에 담기</button>
+  </form>
+</div>
 </body>
 </html>
