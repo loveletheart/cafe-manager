@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import myapp.entity.CartId;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +26,15 @@ public interface CartRepository extends JpaRepository<Cart, CartId> {
 	//장바구니에 항목 비교 검색용으로 쓰는 메서드
 	@Query("SELECT c FROM Cart c WHERE c.userId = :userId AND c.menuName = :menuName " +
 		       "AND c.temperature = :temperature AND c.beanType = :beanType " +
-		       "AND c.cupType = :cupType")
+		       "AND c.cupType = :cupType AND c.date = :date AND c.sit = :sit")
 		Optional<Cart> findSameCartItem(
 		    @Param("userId") String userId,
 		    @Param("menuName") String menuName,
 		    @Param("temperature") String temperature,
 		    @Param("beanType") String beanType,
-		    @Param("cupType") String cupType
+		    @Param("cupType") String cupType,
+		    @Param("date") LocalDate date,
+		    @Param("sit") String sit
 		);
 
 }

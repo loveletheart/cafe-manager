@@ -10,6 +10,8 @@ import myapp.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,21 +34,37 @@ public class MenuService {
     public boolean addToCart(Cart cart) {
         String userId = cart.getUserId();
         String menuName = cart.getMenuName();
+        
+        cart.setDate(LocalDate.now());
+        cart.setSit("주문완료");
+        
+        System.out.println("userId = " + userId);
+        System.out.println("menuName = " + menuName);
+        System.out.println("temperature = " + cart.getTemperature());
+        System.out.println("beanType = " + cart.getBeanType());
+        System.out.println("cupType = " + cart.getCupType());
+        System.out.println("date = " + cart.getDate());
+        System.out.println("sit = " + cart.getSit());
 
         Optional<Cart> existing = cartRepository.findSameCartItem(
             userId,
             menuName,
             cart.getTemperature(),
             cart.getBeanType(),
-            cart.getCupType()
+            cart.getCupType(),
+            cart.getDate(),
+            "주문완료"
         );
         
         if (existing.isPresent()) {
             Cart existingCart = existing.get();
             int newCount = existingCart.getCount() + cart.getCount();
             existingCart.setCount(newCount);
+            System.out.print("테스트1");
             cartRepository.save(existingCart);
         } else {
+        	cart.setDate(LocalDate.now());
+        	System.out.print("테스트2");
             cartRepository.save(cart);
         }
 

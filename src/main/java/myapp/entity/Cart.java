@@ -1,5 +1,8 @@
 package myapp.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +30,15 @@ public class Cart {
 
     @Id
     private String cupType;
-
+    
+    @Id
+    @Column(name = "Date")
+    private LocalDate date;
+    
+    @Id
+    @Column(name = "Situation")
+    private String sit;
+    
     private String menuNameen;
     private String syrup;
     private int count;
