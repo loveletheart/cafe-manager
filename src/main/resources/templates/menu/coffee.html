@@ -1,326 +1,208 @@
+<!-- templates/menu/coffee.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>커피 메뉴</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta name="_csrf" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <link rel="stylesheet" href="/css/options.css" />
+
   <style>
-  html, body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: white;
-    overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
-  }
-
-  .categories {
-    margin-top: 20px;
-    padding: 10px 0;
-    display: flex;
-    justify-content: space-evenly;
-    width: 100vw;
-    background-color: #cae1f2;
-    gap: 5px;
-  }
-
-  .categories a {
-    flex: 1;
-    text-decoration: none;
-    color: black;
-    font-size: 25px;
-    font-weight: bold;
-    border: 1px solid #cae1f2;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #cae1f2;
-    padding: 10px 0;
-  }
-
-  .categories a.active {
-    background-color: white;
-    color: black;
-  }
-
-  .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 0 15px 20px 15px;
-  }
-
-  .menu-item {
-    border: 1px solid gray;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-  }
-
-  .cart-button {
-    display: inline-block;
-    padding: 12px 24px;
-    font-size: 50px;
-    color: white;
-    background-color: #ff6666;
-    border: none;
-    border-radius: 20px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .add-to-cart-button {
-    border-radius: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: white;
-    color: #4682B4;
-    border: 1px solid #4682B4;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
-
-  .modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 999;
-    overflow: hidden; /* ✅ 내부 넘침 방지 */
-  }
-
-  .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 90vw;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    overflow: visible; /* ✅ 내부 콘텐츠가 넘쳐도 스크롤 없음 */
-    box-sizing: border-box;
-  }
-  .modal-content * {
-    max-width: 100%;
-    height: auto;
-    box-sizing: border-box;
-  }
-
-  .modal-options {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: #f9f9f9;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 0;
-    height: auto;
-    width: 100%;
-    border-radius: 24px;
-    overflow: hidden;
-  }
-
-  .modal-options form {
-    background: white;
-    padding: 40px 50px;
-    border-radius: 24px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    max-width: 540px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    font-size: 26px;
-    font-weight: bold;
-    color: #999;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .close:hover {
-    color: #000;
-  }
-
-  /* ✅ 모바일 전용: 모달을 전체 화면으로 */
-  @media screen and (max-width: 768px) {
-    .modal-content {
-      max-width: 95vw;
-      max-height: 95vh;
-      padding: 15px;
-      border-radius: 0;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background-color: white;
+      overflow-x: hidden;
     }
 
-    .modal-options form {
+    body.no-scroll {
+      overflow: hidden;
+      position: fixed;
       width: 100%;
-      max-width: 100%;
-      height: auto;
-      border-radius: 0;
+    }
+
+    .categories {
+      margin-top: 20px;
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-evenly;
+      width: 100vw;
+      background-color: #cae1f2;
+      gap: 5px;
+    }
+
+    .categories a {
+      flex: 1;
+      text-decoration: none;
+      color: black;
+      font-size: 25px;
+      font-weight: bold;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #cae1f2;
+      padding: 10px 0;
+    }
+
+    .categories a.active {
+      background-color: white;
+      color: black;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 0 15px 20px 15px;
+    }
+
+    .menu-item {
+      border: 1px solid gray;
       padding: 20px;
-      box-shadow: none;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .cart-button {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 24px;
+      color: white;
+      background-color: #ff6666;
+      border-radius: 20px;
+      text-decoration: none;
+      margin-top: 30px;
+    }
+
+    .add-to-cart-button {
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: white;
+      color: #4682B4;
+      border: 1px solid #4682B4;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    /* 모달 기본 구조 */
+    .modal {
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      overflow-y: auto;
+      padding: 40px 0;
+      box-sizing: border-box;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
+      position: relative;
+      background: transparent;
     }
 
     .close {
-      top: 8px;
-      right: 10px;
-      font-size: 24px;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 28px;
+      color: #999;
+      background: none;
+      border: none;
+      cursor: pointer;
     }
-  }
-</style>
+
+    .close:hover {
+      color: black;
+    }
+  </style>
 </head>
 <body>
-<h1>Menu</h1>
-<div id="mainContent">
-  <div class="categories">
-    <a th:href="@{/menu/coffee}" th:text="'커피'" th:classappend="${activeCategory == 'coffee'} ? 'active'"></a>
-    <a th:href="@{/menu/aid}" th:text="'에이드'" th:classappend="${activeCategory == 'aid'} ? 'active'"></a>
-    <a th:href="@{/menu/cookie}" th:text="'쿠키'" th:classappend="${activeCategory == 'cookie'} ? 'active'"></a>
-    <a th:href="@{/menu/bread}" th:text="'빵'" th:classappend="${activeCategory == 'bread'} ? 'active'"></a>
-    <a th:href="@{/menu/cake}" th:text="'케이크'" th:classappend="${activeCategory == 'cake'} ? 'active'"></a>
-  </div>
-  <div class="menu-grid">
-    <div class="menu-item" th:each="menu : ${menus}">
-      <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
-      <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;"></span></p>
-      <p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span> ₩</span></p>
-      <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
-    </div>
-  </div>
-  <div style="margin-top: 20px; text-align: center;">
-    <a href="/menu/cart" class="cart-button">장바구니</a>
-  </div>
+<h1>커피 메뉴</h1>
 
-  <!-- 옵션 모달 -->
-  <div id="optionModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-    <div class="modal-content">
-      <button class="close" aria-label="모달 닫기">&times;</button>
-      <div id="optionFormContainer" role="document"></div>
+<div class="categories">
+  <a th:href="@{/menu/coffee}" th:classappend="${activeCategory == 'coffee'} ? 'active'">커피</a>
+  <a th:href="@{/menu/aid}" th:classappend="${activeCategory == 'aid'} ? 'active'">에이드</a>
+  <a th:href="@{/menu/cookie}" th:classappend="${activeCategory == 'cookie'} ? 'active'">쿠키</a>
+  <a th:href="@{/menu/bread}" th:classappend="${activeCategory == 'bread'} ? 'active'">빵</a>
+  <a th:href="@{/menu/cake}" th:classappend="${activeCategory == 'cake'} ? 'active'">케이크</a>
+</div>
+
+<div class="menu-grid">
+  <div class="menu-item" th:each="menu : ${menus}">
+    <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuName}" style="width:300px;height:300px;">
+    <p><strong th:text="${menu.menuName}">아메리카노</strong></p>
+    <p><span th:text="${menu.price}"></span> ₩</p>
+    <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
+  </div>
+</div>
+
+<a href="/menu/cart" class="cart-button">장바구니</a>
+
+<!-- 옵션 모달 -->
+<div id="optionModal" class="modal">
+  <div class="modal-content">
+    <button class="close" aria-label="닫기">&times;</button>
+    <div id="optionFormContainer">
+      <!-- AJAX로 불러올 옵션 폼 위치 -->
     </div>
   </div>
 </div>
 
 <script>
-$(document).ready(function () {
-  const csrfToken = $('meta[name="_csrf"]').attr('content');
-  const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+  $(document).ready(function () {
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
-  function closeModal() {
-    $('#optionModal').fadeOut();
-    $('body').removeClass('no-scroll');  // ✅ 스크롤 허용
-    $('#mainContent').removeAttr('aria-hidden');
-  }
-
-  $('.add-to-cart-button').click(function () {
-    const menuName = $(this).data('menuname');
-    if (!menuName) {
-      alert('menuName이 비어 있습니다.');
-      return;
+    function openModal() {
+      $('#optionModal').fadeIn();
+      $('body').addClass('no-scroll');
     }
 
-    $.ajax({
-      url: '/menu/order/' + encodeURIComponent(menuName),
-      method: 'GET',
-      success: function (html) {
-        $('#optionFormContainer').html(html);
-        $('#optionModal').fadeIn().attr('tabindex', '-1').focus();
-        $('body').addClass('no-scroll'); // ✅ 스크롤 방지
-        $('#mainContent').attr('aria-hidden', 'true');
+    function closeModal() {
+      $('#optionModal').fadeOut();
+      $('body').removeClass('no-scroll');
+    }
 
-        const $beanInputs = $('#optionFormContainer input[name="beanType"]');
-        const $descTarget = $('#optionFormContainer #bean-description');
-
-        $beanInputs.on('change', function () {
-          const desc = $(this).data('desc');
-          $descTarget.text(desc || '');
-        });
-
-        const $selected = $beanInputs.filter(':checked');
-        if ($selected.length) {
-          $descTarget.text($selected.data('desc'));
-        } else {
-          $descTarget.text('');
+    $('.add-to-cart-button').click(function () {
+      const menuName = $(this).data('menuname');
+      $.ajax({
+        url: '/menu/order/' + encodeURIComponent(menuName),
+        method: 'GET',
+        success: function (html) {
+          $('#optionFormContainer').html(html);
+          openModal();
+        },
+        error: function () {
+          alert('옵션 정보를 불러오지 못했습니다.');
         }
-      },
-      error: function () {
-        alert('옵션 정보를 불러오지 못했습니다.');
-      }
+      });
     });
-  });
 
-  $('#optionModal').on('click', function (e) {
-    if (e.target.id === 'optionModal') {
-      closeModal();
-    }
-  });
-
-  $('#optionModal').on('click', '.close', function () {
-    closeModal();
-  });
-
-  $('#optionFormContainer').on('click', '#plus-btn', function () {
-    const $input = $('#optionFormContainer').find('input[name="count"]');
-    let current = parseInt($input.val());
-    if (isNaN(current) || current < 1) current = 1;
-    $input.val(current + 1);
-  });
-
-  $('#optionFormContainer').on('click', '#minus-btn', function () {
-    const $input = $('#optionFormContainer').find('input[name="count"]');
-    let current = parseInt($input.val());
-    if (isNaN(current) || current <= 1) return;
-    $input.val(current - 1);
-  });
-
-  $('#optionFormContainer').on('submit', '#optionForm', function (e) {
-    e.preventDefault();
-
-    let valid = true;
-    $('#temp-error, #cup-error').hide();
-
-    if (!$('input[name="temperature"]:checked').length) {
-      $('#temp-error').show();
-      valid = false;
-    }
-
-    if (!$('input[name="cupType"]:checked').length) {
-      $('#cup-error').show();
-      valid = false;
-    }
-
-    if (!valid) return;
-
-    $.ajax({
-      type: 'POST',
-      url: $(this).attr('action'),
-      data: $(this).serialize(),
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader(csrfHeader, csrfToken);
-      },
-      success: function () {
-        alert('장바구니에 추가되었습니다.');
+    $('#optionModal').on('click', function (e) {
+      if (e.target.id === 'optionModal') {
         closeModal();
-      },
-      error: function () {
-        alert('추가 실패');
       }
     });
+
+    $('#optionModal .close').click(function () {
+      closeModal();
+    });
   });
-});
 </script>
 </body>
 </html>

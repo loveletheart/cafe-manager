@@ -78,6 +78,28 @@
 
     <button type="submit" class="add-to-cart-button">장바구니에 담기</button>
   </form>
+  <script th:inline="javascript">
+  $(document).ready(function () {
+    // 수량 증가/감소
+    $('#plus-btn').click(function () {
+      const input = $('input[name="count"]');
+      let count = parseInt(input.val());
+      if (count < 99) input.val(count + 1);
+    });
+
+    $('#minus-btn').click(function () {
+      const input = $('input[name="count"]');
+      let count = parseInt(input.val());
+      if (count > 1) input.val(count - 1);
+    });
+
+    // 원두 설명
+    $('input[name="beanType"]').change(function () {
+      const desc = $(this).data('desc');
+      $('#bean-description').text(desc || '');
+    });
+  });
+</script>
 </div>
 </body>
 </html>

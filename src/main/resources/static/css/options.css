@@ -1,55 +1,23 @@
-@charset "UTF-8";
-
 .modal-options {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: #f9f9f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0;
-  /* min-height 제거 */
-  flex-direction: column;
-  width: 100%;
-  height: auto;
-  box-sizing: border-box;
-}
-
-.modal-options form {
   background: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  max-width: 480px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 30px;
   width: 100%;
-  text-align: center;
-  height: auto;
-  max-height: none;
+  max-width: 460px;
+  margin: auto;
   box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .modal-options label {
-  font-weight: 600;
-  margin-bottom: 2px;
+  font-weight: bold;
   display: block;
-  margin-bottom: 6px;
-  color: #333;
-  font-size: 1.1em;
-}
-
-.modal-options .toggle-group {
-  margin-bottom: 10px; 
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.modal-options .syrup-group {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin: 8px 0 4px;
 }
 
 .modal-options input[type="radio"],
@@ -58,113 +26,123 @@
 }
 
 .modal-options .toggle-label {
-  display: inline-flex;  /* block -> inline-flex 으로 변경 */
-  min-width: 80px;
-  padding: 12px 0;
+  display: inline-block;
   background: #eee;
   border-radius: 20px;
+  padding: 10px 20px;
+  margin: 4px;
   cursor: pointer;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  font-size: 1em;
-  user-select: none;
-  justify-content: center;  /* 글자 가운데 정렬 */
-  align-items: center;
-  text-align: center;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
 .modal-options input:checked + .toggle-label {
-  background: #2699E6;
+  background-color: #2699E6;
   color: white;
 }
 
-.modal-options .bean-option {
-  text-align: left;
-  margin: 8px 0;
-}
-
-.modal-options .bean-option label {
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.modal-options .bean-description {
-  font-size: 0.9em;
-  color: #555;
-  margin-left: 6px;
-}
-
-/* 수량 조절 */
-.modal-options .quantity-control {
+/* 수량 조절 영역 */
+.quantity-control {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 10px;
-  margin: 20px 0 30px 0;
+  margin: 20px 0;
 }
 
-.modal-options .quantity-control input {
-  width: 50px;
+.quantity-control button {
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  background-color: #2699E6;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.quantity-control button:hover {
+  background-color: #1a78be;
+}
+
+.quantity-control input[type="number"] {
+  width: 48px;
+  height: 40px;
+  font-size: 20px;
+  font-weight: bold;
   text-align: center;
-  font-size: 1.3em;
   border: none;
   background: transparent;
   pointer-events: none;
-}
-
-.modal-options .quantity-control button {
-  width: 34px;
-  height: 34px;
-  border: none;
-  background-color: #2699E6;
-  color: white;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s;
+  padding: 0;
+  margin: 0;
+  line-height: 40px;
+  font-family: monospace;
 }
 
-.modal-options .quantity-control button:hover {
-  background-color: #1e7dc2;
-}
-
-/* 장바구니 담기 버튼 */
-.modal-options .add-to-cart-button {
+/* 장바구니 버튼 */
+.add-to-cart-button {
   padding: 12px 30px;
-  font-size: 1.1em;
-  font-weight: bold;
+  background: #ff6666;
   color: white;
-  background-color: #ff6666;
   border: none;
   border-radius: 20px;
+  font-weight: bold;
+  font-size: 1em;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
 }
 
-.modal-options .add-to-cart-button:hover {
+.add-to-cart-button:hover {
   background-color: #e04e4e;
 }
 
-.modal-options input[type="number"]::-webkit-inner-spin-button,
-.modal-options input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* 원두 설명 */
+#bean-description {
+  font-style: italic;
+  color: #555;
+  margin-top: 10px;
+  min-height: 24px;
+  text-align: center;
 }
 
-.modal-options .error-msg {
+/* 에러 메시지 */
+.error-msg {
   color: red;
   font-size: 0.9em;
-  margin-top: 6px;
   display: none;
+  margin-top: 6px;
   text-align: left;
 }
 
-.modal-options #bean-description {
-      margin-top: 8px;
-      font-style: italic;
-      color: #555;
-      min-height: 24px;
-    }
+/* 반응형 */
+@media screen and (max-width: 768px) {
+  .modal-options {
+    padding: 16px;
+  }
+
+  .toggle-label {
+    padding: 8px 16px;
+    font-size: 0.95em;
+  }
+
+  .quantity-control input[type="number"] {
+    width: 40px;
+    font-size: 18px;
+  }
+
+  .quantity-control button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
