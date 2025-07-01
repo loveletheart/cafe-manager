@@ -8,179 +8,212 @@
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <link rel="stylesheet" href="/css/options.css" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      background-color: white;
-    }
+  html, body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: white;
+    overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
+  }
 
-    .categories {
-      margin-top: 20px;
-      padding: 10px 0;
-      display: flex;
-      justify-content: space-evenly;
-      width: 100vw;
-      background-color: #cae1f2;
-      gap: 5px;
-    }
+  .categories {
+    margin-top: 20px;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100vw;
+    background-color: #cae1f2;
+    gap: 5px;
+  }
 
-    .categories a {
-      flex: 1;
-      text-decoration: none;
-      color: black;
-      font-size: 25px;
-      font-weight: bold;
-      border: 1px solid #cae1f2;
-      border-radius: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #cae1f2;
-      padding: 10px 0;
-    }
+  .categories a {
+    flex: 1;
+    text-decoration: none;
+    color: black;
+    font-size: 25px;
+    font-weight: bold;
+    border: 1px solid #cae1f2;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cae1f2;
+    padding: 10px 0;
+  }
 
-    .categories a.active {
-      background-color: white;
-      color: black;
-    }
+  .categories a.active {
+    background-color: white;
+    color: black;
+  }
 
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      padding: 0 15px 20px 15px;
-    }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 15px 20px 15px;
+  }
 
-    .menu-item {
-      border: 1px solid gray;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-    }
+  .menu-item {
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
 
-    .cart-button {
-      display: inline-block;
-      padding: 12px 24px;
-      font-size: 50px;
-      color: white;
-      background-color: #ff6666;
-      border: none;
-      border-radius: 20px;
-      text-decoration: none;
-      cursor: pointer;
-    }
+  .cart-button {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 50px;
+    color: white;
+    background-color: #ff6666;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-    .add-to-cart-button {
-      border-radius: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      background-color: white;
-      color: #4682B4;
-      border: 1px solid #4682B4;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
+  .add-to-cart-button {
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: white;
+    color: #4682B4;
+    border: 1px solid #4682B4;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
 
-    .modal {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.4);
-      z-index: 999;
-      padding: 0;
-      overflow: hidden;
-    }
+  .modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 999;
+    overflow: hidden; /* ✅ 내부 넘침 방지 */
+  }
 
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    overflow: visible; /* ✅ 내부 콘텐츠가 넘쳐도 스크롤 없음 */
+    box-sizing: border-box;
+  }
+  .modal-content * {
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .modal-options {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    height: auto;
+    width: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .modal-options form {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #999;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: #000;
+  }
+
+  /* ✅ 모바일 전용: 모달을 전체 화면으로 */
+  @media screen and (max-width: 768px) {
     .modal-content {
-      background: transparent;
-      width: 90vw;
-      max-width: 480px;
-      max-height: 80vh;
-      padding: 0;
-      margin: 0;
-      overflow: auto;
+      max-width: 95vw;
+      max-height: 95vh;
+      padding: 15px;
       border-radius: 0;
-      box-shadow: none;
-      position: relative;
     }
 
-    .modal-options {
-	  font-family: 'Segoe UI', Tahoma, sans-serif;
-	  background: #f9f9f9;
-	  display: flex;
-	  justify-content: center;
-	  align-items: flex-start;
-	  padding: 0;
-	  height: auto;
-	  min-height: unset;
-	  width: 100%;
-	  border-radius: 24px; /* ⬅ 배경 자체도 부드럽게 */
-	  overflow: hidden;    /* ⬅ 자식 요소가 border-radius 바깥으로 넘치지 않게 */
-	}
-	
-	.modal-options form {
-	  background: white;
-	  padding: 40px 50px;         /* 상하좌우 여백 넉넉하게 */
-	  border-radius: 24px;        /* ⬅ 둥근 모서리 (기존 12px → 24px) */
-	  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* 더 부드러운 그림자 */
-	  max-width: 540px;           /* ⬅ 모달 최대 너비 키움 (기존 480px → 540px) */
-	  width: 100%;
-	  text-align: center;
-	}
-	
+    .modal-options form {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border-radius: 0;
+      padding: 20px;
+      box-shadow: none;
+    }
 
     .close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 26px;
-      font-weight: bold;
-      color: #999;
-      background: none;
-      border: none;
-      cursor: pointer;
+      top: 8px;
+      right: 10px;
+      font-size: 24px;
     }
-    .close:hover {
-      color: #000;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 <h1>Menu</h1>
 <div id="mainContent">
-	<div class="categories">
-	  <a th:href="@{/menu/coffee}" th:text="'커피'" th:classappend="${activeCategory == 'coffee'} ? 'active'"></a>
-	  <a th:href="@{/menu/aid}" th:text="'에이드'" th:classappend="${activeCategory == 'aid'} ? 'active'"></a>
-	  <a th:href="@{/menu/cookie}" th:text="'쿠키'" th:classappend="${activeCategory == 'cookie'} ? 'active'"></a>
-	  <a th:href="@{/menu/bread}" th:text="'빵'" th:classappend="${activeCategory == 'bread'} ? 'active'"></a>
-	  <a th:href="@{/menu/cake}" th:text="'케이크'" th:classappend="${activeCategory == 'cake'} ? 'active'"></a>
-	</div>
-	<div class="menu-grid">
-	  <div class="menu-item" th:each="menu : ${menus}">
-	    <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
-	    <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;"></span></p>
-	    <p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span> ₩</span></p>
-	    <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
-	  </div>
-	</div>
-	<div style="margin-top: 20px; text-align: center;">
-	  <a href="/menu/cart" class="cart-button">장바구니</a>
-	</div>
-	<div id="optionModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-	  <div class="modal-content">
-	    <button class="close" aria-label="모달 닫기">&times;</button>
-	    <div id="optionFormContainer" role="document">
-	    </div>
-	  </div>
-	</div>
+  <div class="categories">
+    <a th:href="@{/menu/coffee}" th:text="'커피'" th:classappend="${activeCategory == 'coffee'} ? 'active'"></a>
+    <a th:href="@{/menu/aid}" th:text="'에이드'" th:classappend="${activeCategory == 'aid'} ? 'active'"></a>
+    <a th:href="@{/menu/cookie}" th:text="'쿠키'" th:classappend="${activeCategory == 'cookie'} ? 'active'"></a>
+    <a th:href="@{/menu/bread}" th:text="'빵'" th:classappend="${activeCategory == 'bread'} ? 'active'"></a>
+    <a th:href="@{/menu/cake}" th:text="'케이크'" th:classappend="${activeCategory == 'cake'} ? 'active'"></a>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-item" th:each="menu : ${menus}">
+      <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuNameen}" style="width:300px;height:300px;">
+      <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;"></span></p>
+      <p><span th:text="${menu.price}" style="font-size: 19px; font-weight: bold;"></span><span> ₩</span></p>
+      <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
+    </div>
+  </div>
+  <div style="margin-top: 20px; text-align: center;">
+    <a href="/menu/cart" class="cart-button">장바구니</a>
+  </div>
+
+  <!-- 옵션 모달 -->
+  <div id="optionModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <div class="modal-content">
+      <button class="close" aria-label="모달 닫기">&times;</button>
+      <div id="optionFormContainer" role="document"></div>
+    </div>
+  </div>
 </div>
-	
+
 <script>
 $(document).ready(function () {
   const csrfToken = $('meta[name="_csrf"]').attr('content');
@@ -188,10 +221,10 @@ $(document).ready(function () {
 
   function closeModal() {
     $('#optionModal').fadeOut();
+    $('body').removeClass('no-scroll');  // ✅ 스크롤 허용
     $('#mainContent').removeAttr('aria-hidden');
   }
 
-  // 메뉴에서 옵션 선택 버튼 클릭 시 모달 띄우기
   $('.add-to-cart-button').click(function () {
     const menuName = $(this).data('menuname');
     if (!menuName) {
@@ -205,9 +238,9 @@ $(document).ready(function () {
       success: function (html) {
         $('#optionFormContainer').html(html);
         $('#optionModal').fadeIn().attr('tabindex', '-1').focus();
+        $('body').addClass('no-scroll'); // ✅ 스크롤 방지
         $('#mainContent').attr('aria-hidden', 'true');
 
-        // ✅ AJAX로 로드된 옵션 폼 안에서 원두 설명 바인딩
         const $beanInputs = $('#optionFormContainer input[name="beanType"]');
         const $descTarget = $('#optionFormContainer #bean-description');
 
@@ -216,7 +249,6 @@ $(document).ready(function () {
           $descTarget.text(desc || '');
         });
 
-        // 처음 로딩 시 선택된 값 있으면 설명 출력
         const $selected = $beanInputs.filter(':checked');
         if ($selected.length) {
           $descTarget.text($selected.data('desc'));
@@ -230,19 +262,16 @@ $(document).ready(function () {
     });
   });
 
-  // 모달 외부 클릭 시 닫기
   $('#optionModal').on('click', function (e) {
     if (e.target.id === 'optionModal') {
       closeModal();
     }
   });
 
-  // 닫기 버튼 클릭 시 모달 닫기
   $('#optionModal').on('click', '.close', function () {
     closeModal();
   });
 
-  // 수량 조절 버튼 기능
   $('#optionFormContainer').on('click', '#plus-btn', function () {
     const $input = $('#optionFormContainer').find('input[name="count"]');
     let current = parseInt($input.val());
@@ -257,7 +286,6 @@ $(document).ready(function () {
     $input.val(current - 1);
   });
 
-  // 옵션 폼 제출 시 유효성 검사 및 AJAX 전송
   $('#optionFormContainer').on('submit', '#optionForm', function (e) {
     e.preventDefault();
 
