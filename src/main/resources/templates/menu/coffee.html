@@ -145,9 +145,9 @@
 <div class="menu-grid">
   <div class="menu-item" th:each="menu : ${menus}">
     <img th:src="@{|/images/${menu.menuNameen}.jpg|}" th:alt="${menu.menuName}" style="width:300px;height:300px;">
-    <p><strong th:text="${menu.menuName}">아메리카노</strong></p>
-    <p><span th:text="${menu.price}"></span> ₩</p>
-    <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">옵션 선택</button>
+    <p><span th:text="${menu.menuName}" style="font-size: 24px; font-weight: bold;"></span></p>
+    <p><span th:text="${menu.price}" style="font-size: 22px; font-weight: normal;"></span><span>원</span></p>
+    <button class="add-to-cart-button" th:data-menuname="${menu.menuName}">메뉴 선택</button>
   </div>
 </div>
 
@@ -202,6 +202,31 @@
     $('#optionModal .close').click(function () {
       closeModal();
     });
+
+    
+    $('#optionFormContainer').on('submit', '#optionForm', function (e) {
+        e.preventDefault();
+
+        let valid = true;
+        $('#temp-error, #cup-error').hide();
+
+        if (!$('input[name="temperature"]:checked').length) {
+          $('#temp-error').show();
+          valid = false;
+        }
+        
+        if (!$('input[name="beanType"]:checked').length) {
+            $('#bean-error').show();
+            valid = false;
+          }
+
+        if (!$('input[name="cupType"]:checked').length) {
+          $('#cup-error').show();
+          valid = false;
+        }
+
+        if (!valid) return;
+  });
   });
 </script>
 </body>

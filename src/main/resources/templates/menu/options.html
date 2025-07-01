@@ -92,12 +92,6 @@
       let count = parseInt(input.val());
       if (count > 1) input.val(count - 1);
     });
-
-    // 원두 설명
-    $('input[name="beanType"]').change(function () {
-      const desc = $(this).data('desc');
-      $('#bean-description').text(desc || '');
-    });
   });
 </script>
 </div>
