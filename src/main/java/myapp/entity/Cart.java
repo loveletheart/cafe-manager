@@ -44,9 +44,13 @@ public class Cart {
     private int count;
     private int price;
     
-    public Cart(String userId, String menuName, String menuNameen, int count, int price) {
+    public Cart(String userId, String menuName,String temperature,String beanType,String cupType,String syrup,String menuNameen, int count, int price) {
         this.userId = userId;
         this.menuName = menuName;
+        this.temperature = temperature;
+        this.beanType = beanType;
+        this.cupType = cupType;
+        this.syrup = syrup;
         this.menuNameen = menuNameen;
         this.count = count;
         this.price = price;

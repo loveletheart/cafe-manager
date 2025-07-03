@@ -97,6 +97,12 @@
 		.quantity-control button:hover {
 		    background-color: #c0392b; /* 호버 효과 */
 		}
+		.menu-options {
+		    font-size: 18px;
+		    color: gray;
+		    margin-top: 4px;
+		    display: block;
+		}
     </style>
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -117,12 +123,22 @@
                 <!-- 장바구니 항목 반복 출력 -->
                 <tr th:each="cartItem : ${cartItems}" th:attr="data-menu-name=${cartItem.menuName}">
                 	<td>
-	                	<span style="display: flex; align-items: center;">
-				            <img th:src="@{|/images/${cartItem.menuNameen}.jpg|}" 
-				                 th:alt="${cartItem.menuNameen}" 
-				                 style="width:100px; height:100px; margin-right: 10px;">
-				            <span th:text="${cartItem.menuName}" style="margin-left: 35px; font-size: 25px; font-weight: 1000;">메뉴 이름</span>
-				        </span>
+	                	<div style="display: flex; align-items: center;">
+						    <img th:src="@{|/images/${cartItem.menuNameen}.jpg|}" 
+						         th:alt="${cartItem.menuNameen}" 
+						         style="width:100px; height:100px; margin-right: 10px;">
+						         
+						    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+						        <div th:text="${cartItem.menuName}" 
+						             style="font-size: 25px; font-weight: 1000; margin-bottom: 4px;">
+						            메뉴 이름
+						        </div>
+						        <div class="menu-options"
+						             th:text="${cartItem.temperature} + ' / ' + ${cartItem.beanType} + ' / ' + ${cartItem.cupType} + ' / ' + ${cartItem.syrup}">
+						            옵션 정보
+						        </div>
+						    </div>
+						</div>
                 	</td>
                    	<td>
 				        <div class="quantity-control">
