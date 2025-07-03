@@ -208,7 +208,7 @@
         e.preventDefault();
 
         let valid = true;
-        $('#temp-error, #cup-error').hide();
+        $('#temp-error, #cup-error','#bean-error').hide();
 
         if (!$('input[name="temperature"]:checked').length) {
           $('#temp-error').show();
@@ -226,7 +226,30 @@
         }
 
         if (!valid) return;
-  });
+        
+        const form = $(this);
+        const formData = form.serialize();
+
+        const csrfToken = $('meta[name="_csrf"]').attr('content');
+        const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+        $.ajax({
+          url: form.attr('action'),
+          type: 'POST',
+          data: formData,
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+          },
+          success: function (response) {
+            alert('장바구니에 추가되었습니다!');
+            $('#optionModal').fadeOut();
+            $('body').removeClass('no-scroll');
+          },
+          error: function () {
+            alert('장바구니 담기에 실패했습니다.');
+          }
+        });
+  	});
   });
 </script>
 </body>

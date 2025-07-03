@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <title>주문 화면</title>
@@ -50,113 +52,113 @@
 
   <div id="container" class="order-container"></div>
 
-  <script>
-    var orderTimes = [];
 
-    // 서버에서 주문 데이터 가져오기
-    function fetchOrders() {
-    	fetch('/ods/order')
-    	  .then(response => response.json())
-    	  .then(data => {
-    	    container.innerHTML = ""; // 기존 화면 초기화
-    	    orderTimes = [];
+<script>
+  var orderTimes = [];
 
-    	    let groupedOrders = {}; // userId 기준으로 그룹화
+  // WebSocket 연결 설정
+  let socket = new SockJS("/ws/order");
+  let stompClient = Stomp.over(socket);
 
-    	    data.forEach(order => {
-    	      if (!groupedOrders[order.userId]) {
-    	        groupedOrders[order.userId] = {
-    	          userId: order.userId,
-    	          menuList: [],
-    	          orderTime: order.orderTime
-    	        };
-    	      }
-    	      groupedOrders[order.userId].menuList.push({
-    	        name: order.menuName,
-    	        count: order.quantity
-    	      });
-    	    });
+  stompClient.connect({}, function () {
+    console.log("WebSocket 연결됨");
 
-    	    Object.values(groupedOrders).forEach((groupedOrder, index) => {
-    	      createOrderScreen(groupedOrder, index);
-    	    });
-    	  })
-    	  .catch(error => console.error('Error fetching orders:', error));
-    }
+    // 서버에서 메시지를 구독 (주문 데이터 수신)
+    stompClient.subscribe("/sub/orders", function (message) {
+      const orderList = JSON.parse(message.body);
+      displayOrders(orderList);  // 데이터 도착 시 화면 갱신
+    });
+  });
 
-    // 주문 화면 생성 함수
-    function createOrderScreen(order, index) {
-	  var div = document.createElement("div");
-	  div.className = "order-card";
-	
-	  // 현재 날짜 가져오기 (YYYY-MM-DD)
-	  const today = new Date().toISOString().split('T')[0];
-	
-	  // 주문 시간 변환 (오늘 날짜 + 주문 시간)
-	  const orderTime = new Date(`${today}T${order.orderTime}`);
-	
-	  // 주문 시간을 배열에 저장
-	  orderTimes[index] = orderTime;
-	
-	  // 주문한 메뉴 리스트 문자열 생성
-	  let menuListHTML = order.menuList
-	    .map(menu => `<p class="order-info">${menu.name} - ${menu.count}개</p>`)
-	    .join("");
-	
-	  div.innerHTML = `
-	    <p class="order-title">주문 번호: ${order.userId}</p>
-	    <p class="order-time">주문 시간: ${order.orderTime}</p>
-	    ${menuListHTML} <!-- 주문한 메뉴 리스트 추가 -->
-	    <span class="timer">00:00:00</span>
-	    <button class="button">삭제</button>
-	  `;
-	
-	  container.appendChild(div);
-	}
+  // 주문 데이터 화면에 표시
+  function displayOrders(orderList) {
+    const container = document.getElementById("container");
+    container.innerHTML = ""; // 기존 화면 초기화
+    orderTimes = [];
 
-    // 모든 주문 화면의 경과 시간을 업데이트하는 함수
-    function updateElapsedTime() {
-	  var timerElements = document.querySelectorAll(".timer");
-	  var screenElements = document.querySelectorAll(".order-card");
-	
-	  timerElements.forEach((timerElement, i) => {
-	    if (orderTimes[i]) {
-	      var currentTime = new Date();
-	      var elapsedTime = Math.floor((currentTime - orderTimes[i]) / 1000); // 초 단위 경과 시간 계산
-	      timerElement.textContent = formatTime(elapsedTime);
-	
-	      // 배경색 변경 (시간 경과에 따라)
-	      if (elapsedTime >= 600) {
-	        screenElements[i].style.backgroundColor = "rgba(255, 0, 0, 0.5)"; // 10분 이상: 빨간색
-	      } else if (elapsedTime >= 300) {
-	        screenElements[i].style.backgroundColor = "rgba(255, 165, 0, 0.5)"; // 5분 이상: 주황색
-	      } else {
-	        screenElements[i].style.backgroundColor = "white"; // 기본: 흰색
-	      }
-	    }
-	  });
-	}
-    
-    // 1초마다 주문 시간 업데이트
-    setInterval(updateElapsedTime, 1000);
+    let groupedOrders = {};
 
-    // 페이지 로딩 시 데이터 가져오기
-    fetchOrders();
+    orderList.forEach(order => {
+      if (!groupedOrders[order.userId]) {
+        groupedOrders[order.userId] = {
+          userId: order.userId,
+          menuList: [],
+          orderTime: new Date().toLocaleTimeString() // 현재 시간
+        };
+      }
+      groupedOrders[order.userId].menuList.push({
+        name: order.menuName,
+        count: order.quantity
+      });
+    });
 
-    // 30초마다 주문 리스트 갱신
-    setInterval(fetchOrders, 30000);
+    Object.values(groupedOrders).forEach((order, idx) => {
+      createOrderScreen(order, idx);
+    });
+  }
 
-    // 시간 포맷팅 함수
-    function formatTime(seconds) {
-      let hours = Math.floor(seconds / 3600);
-      let minutes = Math.floor((seconds % 3600) / 60);
-      let secs = seconds % 60;
-      return pad(hours) + ":" + pad(minutes) + ":" + pad(secs);
-    }
+  // 주문 카드 생성
+  function createOrderScreen(order, index) {
+    const container = document.getElementById("container");
 
-    function pad(num) {
-      return (num < 10 ? "0" : "") + num;
-    }
-  </script>
+    var div = document.createElement("div");
+    div.className = "order-card";
+
+    const today = new Date().toISOString().split('T')[0];
+    const orderTime = new Date(`${today}T${order.orderTime}`);
+    orderTimes[index] = new Date(); // 지금 시간을 기준으로 시작
+
+    let menuListHTML = order.menuList
+      .map(menu => `<p class="order-info">${menu.name} - ${menu.count}개</p>`)
+      .join("");
+
+    div.innerHTML = `
+      <p class="order-title">주문 번호: ${order.userId}</p>
+      <p class="order-time">주문 시간: ${order.orderTime}</p>
+      ${menuListHTML}
+      <span class="timer">00:00:00</span>
+      <button class="button">메뉴 준비 완료</button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  // 경과 시간 갱신
+  function updateElapsedTime() {
+    var timerElements = document.querySelectorAll(".timer");
+    var screenElements = document.querySelectorAll(".order-card");
+
+    timerElements.forEach((timerElement, i) => {
+      if (orderTimes[i]) {
+        var currentTime = new Date();
+        var elapsedTime = Math.floor((currentTime - orderTimes[i]) / 1000);
+        timerElement.textContent = formatTime(elapsedTime);
+
+        if (elapsedTime >= 600) {
+          screenElements[i].style.backgroundColor = "rgba(255, 0, 0, 0.5)";
+        } else if (elapsedTime >= 300) {
+          screenElements[i].style.backgroundColor = "rgba(255, 165, 0, 0.5)";
+        } else {
+          screenElements[i].style.backgroundColor = "white";
+        }
+      }
+    });
+  }
+
+  // 1초마다 시간 갱신
+  setInterval(updateElapsedTime, 1000);
+
+  // 시간 포맷팅 함수
+  function formatTime(seconds) {
+    let hours = Math.floor(seconds / 3600);
+    let minutes = Math.floor((seconds % 3600) / 60);
+    let secs = seconds % 60;
+    return pad(hours) + ":" + pad(minutes) + ":" + pad(secs);
+  }
+
+  function pad(num) {
+    return (num < 10 ? "0" : "") + num;
+  }
+</script>
 </body>
 </html>

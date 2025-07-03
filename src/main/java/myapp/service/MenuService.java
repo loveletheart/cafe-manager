@@ -60,11 +60,9 @@ public class MenuService {
             Cart existingCart = existing.get();
             int newCount = existingCart.getCount() + cart.getCount();
             existingCart.setCount(newCount);
-            System.out.print("테스트1");
             cartRepository.save(existingCart);
         } else {
         	cart.setDate(LocalDate.now());
-        	System.out.print("테스트2");
             cartRepository.save(cart);
         }
 

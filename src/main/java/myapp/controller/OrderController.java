@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,9 @@ import java.util.List;
 public class OrderController {
 	
 	@Autowired
-    private final OrderService orderService;
-
-    // 의존성 주입 (OrderService 사용)
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+    private OrderService orderService;
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
     /**
      * 장바구니에서 넘어온 주문 데이터를 받아서 저장하는 엔드포인트
@@ -43,6 +41,7 @@ public class OrderController {
     	boolean success = orderService.processOrder(orderRequests, userID);
     	
     	if (success) {
+            messagingTemplate.convertAndSend("/sub/orders", orderRequests);
             return ResponseEntity.ok("주문이 완료되었습니다.");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 처리 중 오류가 발생했습니다.");

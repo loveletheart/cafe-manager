@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -83,14 +84,15 @@ public class MenuController {
      * 사용자가 '장바구니 추가' 버튼을 클릭하면 호출됨
      */
     @PostMapping("/options/add")
-    public String addToCartWithOptions(@ModelAttribute Cart cart) {
+    @ResponseBody
+    public ResponseEntity<String> addToCartWithOptions(@ModelAttribute Cart cart) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
         cart.setUserId(userId);
 
         menuService.addToCart(cart);
 
-        return "redirect:/menu";
+        return ResponseEntity.ok("success"); // JSON 형태가 아니더라도 단순 문자열 응답 가능
     }
 
     /**

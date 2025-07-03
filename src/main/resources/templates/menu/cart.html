@@ -3,6 +3,8 @@
 <head>
     <title>장바구니</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery가 반드시 먼저 로드되어야 함 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
    		.body {
    			text-align: center;
@@ -159,121 +161,122 @@
         <button class="payment-button" id="checkoutButton">구매하기</button>
     </div>
     
-    <script>
-	 	// CSRF 토큰 가져오기
-	    const csrfToken = $("meta[name='_csrf']").attr("content");
-	    const csrfHeader = $("meta[name='_csrf_header']").attr("content");
-	    
-	    document.addEventListener('DOMContentLoaded', function () {
-	        // 수량 증가 버튼
-	        document.querySelectorAll('.increase-btn').forEach(button => {
-	            button.addEventListener('click', function () {
-	                const row = this.closest('tr');
-	                const itemId = row.getAttribute('data-menu-name');
-	                const countInput = row.querySelector('.item-count');
-	                const newCount = parseInt(countInput.value) + 1;
-	
-	                updateItemCount(itemId, newCount, countInput);
-	            });
-	        });
-	
-	        // 수량 감소 버튼
-	        document.querySelectorAll('.decrease-btn').forEach(button => {
-	            button.addEventListener('click', function () {
-	                const row = this.closest('tr');
-	                const itemId = row.getAttribute('data-menu-name');
-	                const countInput = row.querySelector('.item-count');
-	                const newCount = Math.max(parseInt(countInput.value) - 1, 0);
-	
-	                updateItemCount(itemId, newCount, countInput);
-	            });
-	        });
-	
-	        // AJAX로 수량 업데이트
-	        function updateItemCount(itemId, newCount, countInput) {
-			
-			    $.ajax({
-			        url: '/menu/cart/update',
-			        type: 'POST',
-			        contentType: 'application/json',
-			        data: JSON.stringify({ menuName: itemId, count: newCount }),
-			        beforeSend: function(xhr) {
-			            xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 추가
-			        },
-			        success: function(data) {
-			            if (data.success) {
-			                // 새로운 수량 및 가격 업데이트
-			                countInput.value = newCount;
-			                const totalCell = $(countInput).closest('tr').find('td:nth-last-child(1)');
-			                totalCell.text(data.updatedPrice + '원');
-			
-			                // 전체 합계 업데이트
-			                updateTotalSum(data.totalSum);
-			            } else {
-			                alert('수량 업데이트에 실패했습니다.');
-			            }
-			        },
-			        error: function(xhr, status, error) {
-			            console.error('Error:', error);
-			            alert('요청 처리 중 오류가 발생했습니다.');
-			        }
-			    });
-			}
-	        
-		//전체 정보 업데이트
-		function updateTotalSum(newTotalSum) {
-			document.getElementById('total-sum').textContent = newTotalSum;
-	        }
-	    });
-	    
-	    //구매하기 버튼 클릭 시 실행
-		$(document).ready(function () {
-		$("#checkoutButton").click(function () {
-        var cartItems = [];
+<!-- SockJS와 STOMP 라이브러리 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-        // 장바구니 항목들을 객체로 변환
-	        $("tr[data-menu-name]").each(function () { // 각 장바구니 행에 접근
-	            var menuName = $(this).attr("data-menu-name");//메뉴 이름 가져오기
-	            var quantity = parseInt($(this).find(".item-count").val());//메뉴 개수 가져오기
-	            var priceText = $(this).find("td:nth-last-child(1)").text(); // 가격 텍스트 가져오기
-	            var price = parseInt(priceText.replace("원", "").trim()); // "원" 제거 후 숫자로 변환
-	            var userId = $(this).data("user-id"); // 사용자 ID 추가
-	
-	            if (quantity > 0) { // 수량이 0 이상인 항목만 전송
-	                var item = {
-	                    menuName: menuName,
-	                    quantity: quantity,
-	                    price: price,
-	                    userId: userId
-	                };
-	                cartItems.push(item);
-	            }
-	        });
-	
-	        if (cartItems.length === 0) {
-	            alert("장바구니가 비어 있습니다.");
-	            return;
-	        }
-	
-	        // AJAX 요청으로 서버에 데이터 전송
-	        $.ajax({
-	            url: "/order/checkout",
-	            type: "POST",
-	            contentType: "application/json",
-	            data: JSON.stringify(cartItems),
-	            beforeSend: function(xhr) {
-                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 추가
+<script>
+    const csrfToken = $("meta[name='_csrf']").attr("content");
+    const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+    // WebSocket 연결
+    let stompClient = null;
+
+    function connectWebSocket() {
+        const socket = new SockJS("/ws/order"); // 서버의 WebSocket 엔드포인트
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            console.log("웹소켓 연결 성공");
+        });
+    }
+
+    // 연결 시도
+    connectWebSocket();
+
+    // DOM 준비 시 수량 버튼 로직
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.increase-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const itemId = row.getAttribute('data-menu-name');
+                const countInput = row.querySelector('.item-count');
+                const newCount = parseInt(countInput.value) + 1;
+                updateItemCount(itemId, newCount, countInput);
+            });
+        });
+
+        document.querySelectorAll('.decrease-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const itemId = row.getAttribute('data-menu-name');
+                const countInput = row.querySelector('.item-count');
+                const newCount = Math.max(parseInt(countInput.value) - 1, 0);
+                updateItemCount(itemId, newCount, countInput);
+            });
+        });
+
+        function updateItemCount(itemId, newCount, countInput) {
+            $.ajax({
+                url: '/menu/cart/update',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ menuName: itemId, count: newCount }),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
                 },
-	            success: function (response) {
-	                alert("주문이 완료되었습니다!");
-	                window.location.href = "/menu/coffee"; // 주문 완료 페이지로 이동
-	            },
-	            error: function (xhr, status, error) {
-	                alert("주문 처리 중 오류가 발생했습니다.");
-	            }
-	        });
-	    });
-	});
-    </script>
+                success: function (data) {
+                    if (data.success) {
+                        countInput.value = newCount;
+                        const totalCell = $(countInput).closest('tr').find('td:nth-last-child(1)');
+                        totalCell.text(data.updatedPrice + '원');
+                        updateTotalSum(data.totalSum);
+                    } else {
+                        alert('수량 업데이트에 실패했습니다.');
+                    }
+                },
+                error: function () {
+                    alert('요청 처리 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        function updateTotalSum(newTotalSum) {
+            document.getElementById('total-sum').textContent = newTotalSum;
+        }
+    });
+
+    // 구매 버튼 클릭
+    $(document).ready(function () {
+        $("#checkoutButton").click(function () {
+            const cartItems = [];
+
+            $("tr[data-menu-name]").each(function () {
+                const menuName = $(this).attr("data-menu-name");
+                const quantity = parseInt($(this).find(".item-count").val());
+                const priceText = $(this).find("td:nth-last-child(1)").text();
+                const price = parseInt(priceText.replace("원", "").trim());
+                const userId = $(this).data("user-id");
+
+                if (quantity > 0) {
+                    cartItems.push({ menuName, quantity, price, userId });
+                }
+            });
+
+            if (cartItems.length === 0) {
+                alert("장바구니가 비어 있습니다.");
+                return;
+            }
+
+            // 주문 AJAX 전송
+            $.ajax({
+                url: "/order/checkout",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(cartItems),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                },
+                success: function (response) {
+                    alert("주문이 완료되었습니다!");
+                    window.location.href = "/menu/coffee";
+                },
+                error: function () {
+                    alert("주문 처리 중 오류가 발생했습니다.");
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

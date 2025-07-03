@@ -37,6 +37,7 @@ public class OdsController {
     public ResponseEntity<List<Order>> getOrders() {
     	
         List<Order> cartItems = oederrepository.findBySituationAndOrderDate("주문완료", LocalDate.now());
+        
         return ResponseEntity.ok(cartItems); // JSON 응답 반환
     }
 }
