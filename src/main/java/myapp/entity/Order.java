@@ -11,14 +11,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "orders") // 테이블 이름
+@Data
 public class Order {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) // String 타입의 UUID 사용
     private String id;
+    
     private String userId;    // 주문한 사용자 ID
     
     private String menuName;  // 주문한 메뉴 이름
@@ -28,79 +33,35 @@ public class Order {
     
     private LocalDate orderDate; // 날짜만 저장
     private LocalTime orderTime; // 시간만 저장
-
+    
+    private String temperature; // 온도 설정
+    private String beanType; // 원두 설정
+    private String cupType; // 컵 설정
+    private String syrup; //시럽 종류 설정
+    private String orderGroupId; // 그룹 아이디 설정
     // 기본 생성자
     public Order() {}
 
     // 생성자
-    public Order(String menuName, String userId, int quantity, int price,String situation) {
-        this.menuName = menuName;
-        this.userId = userId;
-        this.quantity = quantity;
-        this.price = price;
-        this.situation = situation;
-    }
-
-    // Getter, Setter
-    public String getuserId() {
-        return userId;
-    }
-
-    public void setuserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getMenuName() {
-        return menuName;
-    }
-
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-    
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-    
-    public String getsituation() {
-        return situation;
-    }
-
-    public void setsituation(String situation) {
-        this.situation = situation;
-    }
+    public Order(String userId, String menuName, int quantity, int price, 
+            String temperature, String beanType, String cupType, String syrup, 
+            String orderGroupId, LocalDate orderDate ,LocalTime orderTime) {
+	   this.userId = userId;
+	   this.menuName = menuName;
+	   this.quantity = quantity;
+	   this.price = price;
+	   this.temperature = temperature;
+	   this.beanType = beanType;
+	   this.cupType = cupType;
+	   this.syrup = syrup;
+	   this.orderGroupId = orderGroupId;
+	   this.orderDate = orderDate;
+	   this.orderTime = orderTime;
+	}
     
     public void setOrderDateTime(LocalDate orderDate, LocalTime orderTime) {
         this.setOrderDate(orderDate);
         this.setOrderTime(orderTime);
     }
-
-	public LocalTime getOrderTime() {
-		return orderTime;
-	}
-
-	public void setOrderTime(LocalTime orderTime) {
-		this.orderTime = orderTime;
-	}
-
-	public LocalDate getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(LocalDate orderDate) {
-		this.orderDate = orderDate;
-	}
 }
 

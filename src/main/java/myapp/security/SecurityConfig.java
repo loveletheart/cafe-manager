@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .successHandler(customAuthenticationSuccessHandler)
+                .failureUrl("/login")
                 .permitAll()
             )
             .logout(logout -> logout

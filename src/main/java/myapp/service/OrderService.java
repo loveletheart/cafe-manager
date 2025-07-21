@@ -10,6 +10,7 @@ import myapp.repository.OrderRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -25,11 +26,13 @@ public class OrderService {
     //개별 주문 저장
     @Transactional
     public boolean processOrder(List<Order> orderRequests, String userId) {
+    	String groupId = UUID.randomUUID().toString();
     	try {
             // 주문 저장
             for (Order order : orderRequests) {
-                order.setuserId(userId);
-                order.setsituation("주문완료");
+            	order.setOrderGroupId(groupId);
+                order.setUserId(userId);
+                order.setSituation("주문완료");
                 order.setOrderDateTime(LocalDate.now(), LocalTime.now());//현재 날짜와 현재 시간 따로 저장
                 orderRepository.save(order);
                 orderRepository.flush();

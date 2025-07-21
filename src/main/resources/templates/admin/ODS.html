@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <meta charset="UTF-8">
   <title>주문 화면</title>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
@@ -82,6 +84,7 @@
   <div id="container" class="order-container"></div>
 
   <script>
+  
     var orderTimes = [];
     window.onload = function () {
         fetch('/admin/order')
@@ -110,21 +113,25 @@
 
     // 주문 데이터 표시
     function displayOrders(orderList) {
-      const container = document.getElementById("container");
-      container.innerHTML = "";
-      orderTimes = [];
+    	const container = document.getElementById("container");
+    	  container.innerHTML = "";
+    	  orderTimes = [];
 
-      let groupedOrders = {};
+		const groupedOrders = {};
 
-      orderList.forEach(order => {
-        if (!groupedOrders[order.userId]) {
-          groupedOrders[order.userId] = {
-            userId: order.userId,
-            menuList: [],
-            orderTime: new Date().toLocaleTimeString()
-          };
-        }
-        groupedOrders[order.userId].menuList.push({
+		orderList.forEach(order => {
+		    const groupId = order.orderGroupId;
+
+		    if (!groupedOrders[groupId]) {
+		      groupedOrders[groupId] = {
+		        orderGroupId: groupId,
+		        userId: order.userId,
+		        orderTime: order.orderTime, // LocalDateTime 문자열
+		        items: []
+		      };
+		    }
+        
+        groupedOrders[groupId].items.push({
           name: order.menuName,
           count: order.quantity
         });
@@ -137,31 +144,31 @@
 
     // 주문 카드 생성
     function createOrderScreen(order, index) {
-      const container = document.getElementById("container");
-
-      const div = document.createElement("div");
-      div.className = "order-card";
-
-      const today = new Date().toISOString().split('T')[0];
-      const orderTime = new Date(`${today}T${order.orderTime}`);
-      orderTimes[index] = new Date(); // 현재 시간 저장
-
-      let menuListHTML = order.menuList
-        .map(menu => `<p class="order-info">${menu.name} - ${menu.count}개</p>`)
-        .join("");
-
-      div.innerHTML = `
-        <div class="order-header">
-          <span class="order-title">주문 번호: ${order.userId}</span>
-          <span class="order-time">${order.orderTime}</span>
-        </div>
-        ${menuListHTML}
-        <span class="timer">00:00:00</span>
-        <button class="button">메뉴 준비 완료</button>
-      `;
-
-      container.appendChild(div);
-    }
+	  const container = document.getElementById("container");
+	
+	  const div = document.createElement("div");
+	  div.className = "order-card";
+	
+	  const timeObj = new Date(order.orderTime);
+	  orderTimes[index] = new Date(); // 현재 시간 기준 타이머 시작
+	
+	  const itemsHTML = order.items
+	    .map(item => `<p class="order-info">${item.menuName} - ${item.quantity}개</p>`)
+	    .join("");
+	
+	  div.innerHTML = `
+	    <div class="order-header">
+	      <span class="order-title">주문 그룹: ${order.orderGroupId}</span>
+	      <span class="order-time">${timeObj.toLocaleTimeString()}</span>
+	    </div>
+	    <div><strong>사용자:</strong> ${order.userId}</div>
+	    ${itemsHTML}
+	    <span class="timer">00:00:00</span>
+	    <button class="button" data-order-group-id="${order.orderGroupId}">준비 완료</button>
+	  `;
+	
+	  container.appendChild(div);
+	}
 
     // 경과 시간 갱신
     function updateElapsedTime() {
@@ -199,6 +206,23 @@
     function pad(num) {
       return (num < 10 ? "0" : "") + num;
     }
+    
+    document.querySelectorAll(".button").forEach(button => {
+        button.addEventListener("click", function () {
+            const orderId = this.getAttribute("data-order-id");
+            fetch(`/admin/complete/${orderId}`, {
+                method: "POST"
+            }).then(res => {
+                if (res.ok) {
+                    alert("상태가 업데이트되었습니다.");
+                    this.disabled = true;
+                    this.textContent = "완료됨";
+                } else {
+                    alert("업데이트 실패");
+                }
+            });
+        });
+    });
   </script>
 </body>
 </html>
