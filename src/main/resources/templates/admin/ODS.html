@@ -8,6 +8,11 @@
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <style>
+    /* 모든 요소에 box-sizing 적용하여 패딩과 보더가 너비에 포함되도록 함 */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
     }
@@ -20,18 +25,21 @@
       display: flex;
       flex-wrap: wrap;
       padding: 20px;
+      gap: 20px; /* 카드들 사이의 간격 */
+      align-content: flex-start;
     }
 
     .order-card {
-      width: 300px;
-      min-height: 250px;
+      width: calc((100% - 4 * 20px) / 5); /* 5개 카드, 4개의 20px 간격을 제외한 너비 */
+      min-height: 250px; /* 카드의 최소 높이 유지 */
       border: 1px solid #ccc;
-      margin: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       background-color: white;
       padding: 15px;
       position: relative;
+      padding-bottom: 50px; /* 하단 컨트롤을 위한 공간 확보 */
+      flex-shrink: 0;
     }
 
     .order-header {
@@ -41,34 +49,51 @@
       margin-bottom: 10px;
     }
 
-    .order-title {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
     .order-time {
       font-size: 14px;
       color: gray;
-      margin-left: 10px;
       white-space: nowrap;
     }
 
     .order-info {
       font-size: 16px;
       margin: 4px 0;
+      padding: 2px 5px; /* 클릭 영역 확보 및 시각적 개선 */
+      cursor: pointer; /* 클릭 가능함을 나타내는 커서 */
+      border-radius: 3px;
+      transition: background-color 0.2s ease; /* 부드러운 색상 전환 */
+    }
+
+    /* --- 새로 추가된 CSS: 완료된 메뉴 항목 스타일 --- */
+    .order-info.completed {
+      background-color: #d4edda; /* 연한 초록색 (만들었다는 표시) */
+      color: #155724; /* 글씨 색상 */
+      text-decoration: line-through; /* 취소선 (옵션) */
+    }
+    /* --- 수정 끝 --- */
+
+    .menu-items-scroll {
+      max-height: 120px; /* 메뉴 목록의 최대 높이 (필요에 따라 조절) */
+      overflow-y: auto; /* 메뉴 목록이 넘칠 때 스크롤바 표시 */
+      margin-bottom: 10px; /* 하단 컨트롤과의 간격 */
+    }
+    
+    .bottom-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .timer {
-      display: block;
-      margin-top: 10px;
       font-weight: bold;
       font-size: 14px;
     }
 
     .button {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
       padding: 5px 10px;
       background-color: #007bff;
       color: white;
@@ -148,26 +173,79 @@
 	
 	  const div = document.createElement("div");
 	  div.className = "order-card";
+	  
+	  const displayHeaderTime = order.orderTime ? order.orderTime.substring(0, 8) : '시간 정보 없음';
+	  
+	  let orderDateTime = new Date();
+	  if (order.orderTime) {
+	      const timeParts = order.orderTime.split(':');
+	      const secondsAndMillis = timeParts[2].split('.');
 	
-	  const timeObj = new Date(order.orderTime);
-	  orderTimes[index] = new Date(); // 현재 시간 기준 타이머 시작
+	      orderDateTime.setHours(parseInt(timeParts[0]));
+	      orderDateTime.setMinutes(parseInt(timeParts[1]));
+	      orderDateTime.setSeconds(parseInt(secondsAndMillis[0]));
+	      orderDateTime.setMilliseconds(parseInt(secondsAndMillis[1] || '0'));
 	
+	      if (orderDateTime > new Date()) {
+	          orderDateTime.setDate(orderDateTime.getDate() - 1);
+	      }
+	  }
+	  orderTimes[index] = orderDateTime;
+	  
 	  const itemsHTML = order.items
-	    .map(item => `<p class="order-info">${item.menuName} - ${item.quantity}개</p>`)
+	    .map(item => `<p class="order-info">${item.name} - ${item.count}개</p>`)
 	    .join("");
-	
+	  
 	  div.innerHTML = `
-	    <div class="order-header">
-	      <span class="order-title">주문 그룹: ${order.orderGroupId}</span>
-	      <span class="order-time">${timeObj.toLocaleTimeString()}</span>
-	    </div>
-	    <div><strong>사용자:</strong> ${order.userId}</div>
-	    ${itemsHTML}
-	    <span class="timer">00:00:00</span>
-	    <button class="button" data-order-group-id="${order.orderGroupId}">준비 완료</button>
-	  `;
+	      <div class="order-header">
+			  <span class="order-title">주문테이블: ${order.userId}</span>
+		      <span class="timer">00:00:00</span>
+	      </div>
+          <div class="menu-items-scroll">
+	          ${itemsHTML}
+          </div>
+          <div class="bottom-controls">
+	          <span class="order-time">${displayHeaderTime}</span>
+	          <button class="button" data-order-group-id="${order.orderGroupId}">준비 완료</button>
+          </div>
+	    `;
 	
 	  container.appendChild(div);
+
+    // --- 새로 추가된 JavaScript: 메뉴 항목 클릭 이벤트 ---
+    // 현재 div 안의 모든 .order-info 요소를 찾아서 클릭 이벤트 리스너 추가
+    const menuItems = div.querySelectorAll('.order-info');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // 클릭된 요소에 'completed' 클래스를 토글 (추가하거나 제거)
+            this.classList.toggle('completed');
+        });
+    });
+    // --- 수정 끝 ---
+	
+    const completeButton = div.querySelector(".button");
+    if (completeButton) {
+        completeButton.addEventListener("click", function () {
+            const orderGroupId = this.getAttribute("data-order-group-id");
+            fetch(`/admin/complete/${orderGroupId}`, {
+                method: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (res.ok) {
+                    alert("상태가 업데이트되었습니다.");
+                    div.remove(); 
+                } else {
+                    alert("업데이트 실패");
+                }
+            }).catch(error => {
+                console.error("준비 완료 요청 실패:", error);
+                alert("업데이트 중 오류가 발생했습니다.");
+            });
+        });
+    }
 	}
 
     // 경과 시간 갱신
@@ -206,23 +284,6 @@
     function pad(num) {
       return (num < 10 ? "0" : "") + num;
     }
-    
-    document.querySelectorAll(".button").forEach(button => {
-        button.addEventListener("click", function () {
-            const orderId = this.getAttribute("data-order-id");
-            fetch(`/admin/complete/${orderId}`, {
-                method: "POST"
-            }).then(res => {
-                if (res.ok) {
-                    alert("상태가 업데이트되었습니다.");
-                    this.disabled = true;
-                    this.textContent = "완료됨";
-                } else {
-                    alert("업데이트 실패");
-                }
-            });
-        });
-    });
   </script>
 </body>
 </html>
