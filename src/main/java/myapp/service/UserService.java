@@ -35,13 +35,13 @@ public class UserService implements UserDetailsService {
     }
 
     // 회원가입 시 QR 코드 자동 생성
-    public boolean registerUser(String id, String password, String username, String role) {
+    public boolean registerUser(String id, String password, String username, String role,String baseUrl) {
         if (userRepository.findById(id).isPresent()) {
             return false; // 이미 존재하는 ID
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        String qrToken = qrCodeloginService.generateQRCode(id); // QR 토큰 생성
+        String qrToken = qrCodeloginService.generateQRCode(id,baseUrl); // QR 토큰 생성
 
         UserData newUser = new UserData(id, username, encodedPassword, role, qrToken);
         userRepository.save(newUser);

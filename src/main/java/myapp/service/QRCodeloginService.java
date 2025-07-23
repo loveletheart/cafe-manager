@@ -27,10 +27,11 @@ public class QRCodeloginService {
     public QRTokenService qrTokenService;
     
     //회원가입시 QR코드 자동생성
-    public String generateQRCode(String id) {
+    public String generateQRCode(String id,String baseUrl) {
         try {
             String token = qrTokenService.createToken(id); // 토큰 생성
-            String qrLoginUrl = "https://192.168.0.8:8443/QRredirect?token=" + token;
+            String qrLoginUrl = baseUrl + "/QRredirect?token=" + token;
+            
             String qrFileName = id + "_qr.png";
             String filePath = QR_CODE_PATH + qrFileName;
             

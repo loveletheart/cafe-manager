@@ -63,9 +63,15 @@ public class LoginController {
                                       @RequestParam String password,
                                       @RequestParam String username,
                                       @RequestParam String role,
+                                      HttpServletRequest httpRequest,
                                       Model model) {
-        System.out.println("회원가입 요청 받음: " + id);
-        boolean success = userService.registerUser(id, password, username, role);
+    	String baseUrl = httpRequest.getScheme() + "://" + httpRequest.getServerName();
+    	if ((httpRequest.getScheme().equals("http") && httpRequest.getServerPort() != 80) ||
+                (httpRequest.getScheme().equals("https") && httpRequest.getServerPort() != 443)) {
+                baseUrl += ":" + httpRequest.getServerPort();
+            }
+    	
+        boolean success = userService.registerUser(id, password, username, role,baseUrl);
         
         if (!success) {
             model.addAttribute("errorMessage", "이미 존재하는 ID 또는 Username입니다.");
