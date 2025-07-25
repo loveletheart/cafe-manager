@@ -2,8 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>장바구니</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery가 반드시 먼저 로드되어야 함 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
    		.body {
@@ -127,9 +126,13 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- 장바구니 항목 반복 출력 -->
-                <tr th:each="cartItem : ${cartItems}" th:attr="data-menu-name=${cartItem.menuName}">
-                	<td>
+                <tr th:each="cartItem : ${cartItems}"
+                    th:attr="data-menu-name=${cartItem.menuName},
+                             data-temperature=${cartItem.temperature},
+                             data-bean-type=${cartItem.beanType},
+                             data-cup-type=${cartItem.cupType},
+                             data-syrup=${cartItem.syrup},
+                             data-user-id=${cartItem.userId}"> <td>
 	                	<div style="display: flex; align-items: center;">
 						    <img th:src="@{|/images/${cartItem.menuNameen}.jpg|}" 
 						         th:alt="${cartItem.menuNameen}" 
@@ -165,27 +168,23 @@
             </tbody>
         </table>
         
-        <!-- 전체 총합 -->
-		<div style="margin-top: 20px;">
+        <div style="margin-top: 20px;">
 	        <p style="font-size: 18px; font-weight: bold; font-size: 25px;">
 	            총 금액: <span id="total-sum" th:text="${totalPrice}">0</span>원
 	        </p>
 	    </div>
     </div>
     
-    <!-- 장바구니에 아무것도 없을 때 -->
     <div th:if="${cartItems.size() == 0}">
         <p>장바구니가 비었습니다.</p>
     </div>
     
-    <!-- menu 페이지로 이동하는 버튼 -->
     <div style="margin-top: 20px; text-align: center;">
         <a href="/menu" class="back-button">메뉴로 돌아가기</a>
         <button class="payment-button" id="checkoutButton">구매하기</button>
         <div id="loadingMessage" class="loading-message">주문 처리 중입니다... 잠시만 기다려 주세요.</div>
     </div>
     
-<!-- SockJS와 STOMP 라이브러리 추가 -->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
@@ -264,20 +263,44 @@
     $(document).ready(function () {
     	const checkoutButton = $("#checkoutButton");
         const loadingMessage = $("#loadingMessage");
-        let isProcessingOrder = false; 
+        let isProcessingOrder = false; // 중복 주문 방지를 위한 플래그
         
         $("#checkoutButton").click(function () {
+            // 이미 주문 처리 중이면 아무것도 하지 않음
+            if (isProcessingOrder) {
+                return;
+            }
+
             const cartItems = [];
 
             $("tr[data-menu-name]").each(function () {
-                const menuName = $(this).attr("data-menu-name");
-                const quantity = parseInt($(this).find(".item-count").val());
-                const priceText = $(this).find("td:nth-last-child(1)").text();
-                const price = parseInt(priceText.replace("원", "").trim());
-                const userId = $(this).data("user-id");
+                const row = $(this); // 현재 tr 요소를 jQuery 객체로 저장
+                const menuName = row.attr("data-menu-name");
+                const quantity = parseInt(row.find(".item-count").val());
+                const priceText = row.find("td:nth-last-child(1)").text();
+                // 'N원' 형식에서 '원'을 제거하고 숫자로 변환
+                const totalItemPrice = parseInt(priceText.replace("원", "").trim());
+                // 단가는 총 가격을 수량으로 나눈 값 (서버에서 개당 가격을 직접 받는 것이 더 정확할 수 있음)
+                const price = totalItemPrice / quantity; 
+
+                // HTML에 추가된 데이터 속성에서 옵션 정보 가져오기
+                const temperature = row.attr("data-temperature");
+                const beanType = row.attr("data-bean-type");
+                const cupType = row.attr("data-cup-type");
+                const syrup = row.attr("data-syrup");
+                const userId = row.attr("data-user-id"); // userId 가져오기
 
                 if (quantity > 0) {
-                    cartItems.push({ menuName, quantity, price, userId });
+                    cartItems.push({ 
+                        menuName, 
+                        quantity, 
+                        price, 
+                        userId,
+                        temperature, // 옵션 정보 포함
+                        beanType,    // 옵션 정보 포함
+                        cupType,     // 옵션 정보 포함
+                        syrup        // 옵션 정보 포함
+                    });
                 }
             });
 
@@ -286,14 +309,14 @@
                 return;
             }
             
-            //구매하기버튼 클릭시 중복구매를 막기위해 주문 처리 안내 멘트 보여주기
+            // 구매하기 버튼 클릭 시 중복 구매를 막기 위해 주문 처리 안내 멘트 보여주기
             isProcessingOrder = true;
             checkoutButton.prop("disabled", true).text("주문 처리 중...");
             loadingMessage.show();
             
             // 주문 AJAX 전송
             $.ajax({
-                url: "/order/checkout",
+                url: "/order/checkout", // 서버의 주문 API 엔드포인트
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(cartItems),
@@ -302,10 +325,16 @@
                 },
                 success: function (response) {
                     alert("주문이 완료되었습니다!");
-                    window.location.href = "/menu/coffee";
+                    // 주문 완료 후 장바구니 비우기 또는 다른 페이지로 이동
+                    window.location.href = "/menu/coffee"; // 예시: 커피 메뉴 페이지로 이동
                 },
-                error: function () {
-                    alert("주문 처리 중 오류가 발생했습니다.");
+                error: function (xhr, status, error) {
+                    console.error("주문 처리 중 오류 발생:", xhr.responseText);
+                    alert("주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+                    // 오류 발생 시 버튼 상태 복원
+                    isProcessingOrder = false;
+                    checkoutButton.prop("disabled", false).text("구매하기");
+                    loadingMessage.hide();
                 }
             });
         });

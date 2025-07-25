@@ -8,98 +8,170 @@
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <style>
-    /* 모든 요소에 box-sizing 적용하여 패딩과 보더가 너비에 포함되도록 함 */
+    /* 기본 스타일 */
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 현대적이고 깔끔한 폰트 */
+      background-color: #f4f7f6; /* 밝은 회색 배경 */
+      color: #333;
     }
 
     h1 {
-      margin-left: 20px;
+      margin: 20px 0 20px 20px; /* 상하좌우 여백 */
+      color: #2c3e50; /* 어두운 제목 색상 */
+      font-size: 2em;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
     }
 
+    /* 주문 컨테이너 - 유연한 레이아웃을 위한 Flexbox */
     .order-container {
       display: flex;
       flex-wrap: wrap;
       padding: 20px;
-      gap: 20px; /* 카드들 사이의 간격 */
-      align-content: flex-start;
+      gap: 20px; /* 카드 사이의 간격 */
+      align-content: flex-start; /* 교차축 시작점에 정렬 */
     }
 
+    /* 주문 카드 - 개별 주문 표시 */
     .order-card {
-      width: calc((100% - 4 * 20px) / 5); /* 5개 카드, 4개의 20px 간격을 제외한 너비 */
-      min-height: 250px; /* 카드의 최소 높이 유지 */
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
+      width: calc((100% - 4 * 20px) / 5); /* 5개 카드, 일정한 간격 유지 */
+      min-height: 260px; /* 균형을 위한 최소 높이 */
+      border: 1px solid #e0e0e0; /* 밝은 테두리 */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 부드러운 그림자 */
+      border-radius: 12px; /* 둥근 모서리 */
       background-color: white;
-      padding: 15px;
+      padding: 20px; /* 늘어난 패딩 */
       position: relative;
-      padding-bottom: 50px; /* 하단 컨트롤을 위한 공간 확보 */
-      flex-shrink: 0;
+      padding-bottom: 60px; /* 하단 컨트롤을 위한 공간 */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* 공간 배분 */
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 부드러운 전환 효과 */
     }
 
+    .order-card:hover {
+        transform: translateY(-3px); /* 호버 시 살짝 위로 이동 */
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    /* 주문 헤더 - 테이블 번호 및 타이머 */
     .order-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px; /* 헤더 아래 여백 */
+      border-bottom: 1px dashed #e9ecef; /* 미세한 구분선 */
+      padding-bottom: 8px;
     }
 
-    .order-time {
-      font-size: 14px;
-      color: gray;
-      white-space: nowrap;
-    }
-
-    .order-info {
-      font-size: 16px;
-      margin: 4px 0;
-      padding: 2px 5px; /* 클릭 영역 확보 및 시각적 개선 */
-      cursor: pointer; /* 클릭 가능함을 나타내는 커서 */
-      border-radius: 3px;
-      transition: background-color 0.2s ease; /* 부드러운 색상 전환 */
-    }
-
-    /* --- 새로 추가된 CSS: 완료된 메뉴 항목 스타일 --- */
-    .order-info.completed {
-      background-color: #d4edda; /* 연한 초록색 (만들었다는 표시) */
-      color: #155724; /* 글씨 색상 */
-      text-decoration: line-through; /* 취소선 (옵션) */
-    }
-    /* --- 수정 끝 --- */
-
-    .menu-items-scroll {
-      max-height: 120px; /* 메뉴 목록의 최대 높이 (필요에 따라 조절) */
-      overflow-y: auto; /* 메뉴 목록이 넘칠 때 스크롤바 표시 */
-      margin-bottom: 10px; /* 하단 컨트롤과의 간격 */
-    }
-    
-    .bottom-controls {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      right: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .order-title {
+      font-size: 1.1em;
+      font-weight: 700; /* 테이블 번호 볼드 처리 */
+      color: #34495e;
     }
 
     .timer {
       font-weight: bold;
-      font-size: 14px;
+      font-size: 1em;
+      color: #e74c3c; /* 타이머 빨간색 */
     }
 
+    /* 메뉴 항목 스크롤 컨테이너 */
+    .menu-items-scroll {
+      max-height: 120px; /* 스크롤 가능한 메뉴 목록 최대 높이 */
+      overflow-y: auto; /* 세로 스크롤바 표시 */
+      margin-bottom: 15px; /* 하단 컨트롤 위 여백 */
+      flex-grow: 1; /* 사용 가능한 공간 차지 */
+    }
+
+    /* 개별 메뉴 항목 정보 */
+    .order-info {
+      font-size: 0.95em;
+      margin: 6px 0; /* 조정된 여백 */
+      padding: 4px 8px; /* 클릭 영역 확보를 위한 패딩 */
+      cursor: pointer;
+      border-radius: 5px; /* 둥근 모서리 */
+      transition: background-color 0.2s ease;
+      background-color: #f8f9fa; /* 아이템 배경색 */
+      border: 1px solid #eee;
+    }
+
+    .order-info:hover {
+        background-color: #e2e6ea; /* 호버 시 밝은 회색 */
+    }
+
+    /* 완료된 메뉴 항목 스타일 */
+    .order-info.completed {
+      background-color: #d4edda; /* 연한 녹색 */
+      color: #155724; /* 진한 녹색 텍스트 */
+      text-decoration: line-through; /* 취소선 */
+      border-color: #c3e6cb;
+    }
+
+    /* 주문 옵션 - 메뉴 항목의 세부 정보 */
+    .order-options {
+      font-size: 0.85em; /* 작은 글꼴 */
+      color: #7f8c8d; /* 차분한 회색 */
+      margin-left: 20px; /* 깊은 들여쓰기 */
+      margin-top: -3px; /* 메뉴 항목에 가깝게 붙임 */
+      margin-bottom: 8px; /* 옵션 아래 여백 */
+      line-height: 1.4; /* 줄 간격 */
+    }
+
+    .order-options span {
+        white-space: nowrap; /* 옵션 줄바꿈 방지 */
+    }
+    
+    .order-options span:not(:last-child)::after {
+        content: ' / '; /* 옵션 사이에 구분자 추가 */
+        margin: 0 4px;
+        color: #bdc3c7;
+    }
+
+    /* 하단 컨트롤 - 시간 및 버튼 */
+    .bottom-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .order-time {
+      font-size: 0.9em;
+      color: #7f8c8d;
+    }
+
+    /* 버튼 스타일 */
     .button {
-      padding: 5px 10px;
-      background-color: #007bff;
+      padding: 8px 15px; /* 버튼 패딩 */
+      background-color: #3498db; /* 파란색 버튼 */
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px; /* 둥근 버튼 */
       cursor: pointer;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .button:hover {
+      background-color: #2980b9; /* 호버 시 어두운 파란색 */
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -109,13 +181,11 @@
   <div id="container" class="order-container"></div>
 
   <script>
-  
-    var orderTimes = [];
     window.onload = function () {
         fetch('/admin/order')
           .then(response => response.json())
           .then(orderList => {
-            displayOrders(orderList); // 기존 WebSocket 메시지랑 동일한 함수 사용
+            displayOrders(orderList);
           })
           .catch(error => {
             console.error("기존 주문 불러오기 실패:", error);
@@ -136,135 +206,187 @@
       });
     });
 
-    // 주문 데이터 표시
+    // 주문 데이터를 화면에 표시하거나 업데이트
     function displayOrders(orderList) {
-    	const container = document.getElementById("container");
-    	  container.innerHTML = "";
-    	  orderTimes = [];
-
-		const groupedOrders = {};
-
-		orderList.forEach(order => {
-		    const groupId = order.orderGroupId;
-
-		    if (!groupedOrders[groupId]) {
-		      groupedOrders[groupId] = {
-		        orderGroupId: groupId,
-		        userId: order.userId,
-		        orderTime: order.orderTime, // LocalDateTime 문자열
-		        items: []
-		      };
-		    }
+        const container = document.getElementById("container");
         
-        groupedOrders[groupId].items.push({
-          name: order.menuName,
-          count: order.quantity
-        });
-      });
-
-      Object.values(groupedOrders).forEach((order, idx) => {
-        createOrderScreen(order, idx);
-      });
-    }
-
-    // 주문 카드 생성
-    function createOrderScreen(order, index) {
-	  const container = document.getElementById("container");
-	
-	  const div = document.createElement("div");
-	  div.className = "order-card";
-	  
-	  const displayHeaderTime = order.orderTime ? order.orderTime.substring(0, 8) : '시간 정보 없음';
-	  
-	  let orderDateTime = new Date();
-	  if (order.orderTime) {
-	      const timeParts = order.orderTime.split(':');
-	      const secondsAndMillis = timeParts[2].split('.');
-	
-	      orderDateTime.setHours(parseInt(timeParts[0]));
-	      orderDateTime.setMinutes(parseInt(timeParts[1]));
-	      orderDateTime.setSeconds(parseInt(secondsAndMillis[0]));
-	      orderDateTime.setMilliseconds(parseInt(secondsAndMillis[1] || '0'));
-	
-	      if (orderDateTime > new Date()) {
-	          orderDateTime.setDate(orderDateTime.getDate() - 1);
-	      }
-	  }
-	  orderTimes[index] = orderDateTime;
-	  
-	  const itemsHTML = order.items
-	    .map(item => `<p class="order-info">${item.name} - ${item.count}개</p>`)
-	    .join("");
-	  
-	  div.innerHTML = `
-	      <div class="order-header">
-			  <span class="order-title">주문테이블: ${order.userId}</span>
-		      <span class="timer">00:00:00</span>
-	      </div>
-          <div class="menu-items-scroll">
-	          ${itemsHTML}
-          </div>
-          <div class="bottom-controls">
-	          <span class="order-time">${displayHeaderTime}</span>
-	          <button class="button" data-order-group-id="${order.orderGroupId}">준비 완료</button>
-          </div>
-	    `;
-	
-	  container.appendChild(div);
-
-    // --- 새로 추가된 JavaScript: 메뉴 항목 클릭 이벤트 ---
-    // 현재 div 안의 모든 .order-info 요소를 찾아서 클릭 이벤트 리스너 추가
-    const menuItems = div.querySelectorAll('.order-info');
-    menuItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // 클릭된 요소에 'completed' 클래스를 토글 (추가하거나 제거)
-            this.classList.toggle('completed');
-        });
-    });
-    // --- 수정 끝 ---
-	
-    const completeButton = div.querySelector(".button");
-    if (completeButton) {
-        completeButton.addEventListener("click", function () {
-            const orderGroupId = this.getAttribute("data-order-group-id");
-            fetch(`/admin/complete/${orderGroupId}`, {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content,
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => {
-                if (res.ok) {
-                    alert("상태가 업데이트되었습니다.");
-                    div.remove(); 
-                } else {
-                    alert("업데이트 실패");
-                }
-            }).catch(error => {
-                console.error("준비 완료 요청 실패:", error);
-                alert("업데이트 중 오류가 발생했습니다.");
+        // 1. 서버에서 받은 개별 주문 항목들을 orderGroupId 기준으로 묶기
+        const newGroupedOrdersMap = new Map();
+        orderList.forEach(order => {
+            const groupId = order.orderGroupId;
+            if (!newGroupedOrdersMap.has(groupId)) {
+                newGroupedOrdersMap.set(groupId, {
+                    orderGroupId: groupId,
+                    userId: order.userId,
+                    orderTime: order.orderTime,
+                    items: []
+                });
+            }
+            newGroupedOrdersMap.get(groupId).items.push({
+                name: order.menuName,
+                count: order.quantity,
+                temperature: order.temperature,
+                beanType: order.beanType,
+                cupType: order.cupType,
+                syrup: order.syrup
             });
         });
+
+        // 2. 현재 화면에 있는 주문 카드들의 그룹 ID를 추적
+        const currentDisplayedOrderGroupIds = new Set();
+        Array.from(container.children).forEach(card => {
+            const orderGroupId = card.getAttribute('data-order-group-id');
+            if (orderGroupId) {
+                currentDisplayedOrderGroupIds.add(orderGroupId);
+            }
+        });
+
+        // 3. 현재 화면에 있지만 새 목록에 없는 카드 제거
+        Array.from(container.children).forEach(card => {
+            const orderGroupId = card.getAttribute('data-order-group-id');
+            if (orderGroupId && !newGroupedOrdersMap.has(orderGroupId)) {
+                card.remove();
+            }
+        });
+
+        // 4. 새 목록에 있지만 화면에 없는 카드 추가
+        newGroupedOrdersMap.forEach((orderGroup, orderGroupId) => {
+            if (!currentDisplayedOrderGroupIds.has(orderGroupId)) {
+                createOrderCard(orderGroup); // 그룹화된 주문 데이터를 전달
+            }
+        });
     }
-	}
+
+    // 주문 카드 생성 함수 (DOM 조작만 담당)
+    function createOrderCard(orderGroup) { // 인자를 orderGroup으로 받도록 변경
+        const container = document.getElementById("container");
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.setAttribute('data-order-group-id', orderGroup.orderGroupId); // 카드에 그룹 ID 저장
+
+        // orderTime 문자열을 Date 객체로 변환하여 data-order-time 속성에 저장
+        let orderDateTime;
+        if (orderGroup.orderTime) {
+            const timeParts = orderGroup.orderTime.split(':');
+            const secondsAndMillis = timeParts[2].split('.');
+            orderDateTime = new Date();
+            orderDateTime.setHours(parseInt(timeParts[0]));
+            orderDateTime.setMinutes(parseInt(timeParts[1]));
+            orderDateTime.setSeconds(parseInt(secondsAndMillis[0]));
+            // 밀리초가 없는 경우를 위해 '0'으로 폴백
+            orderDateTime.setMilliseconds(parseInt(secondsAndMillis[1] || '0')); 
+            
+            // 서버 시간과 클라이언트 시간 차이 보정 (날짜 부분)
+            const now = new Date();
+            if (orderDateTime.getHours() > now.getHours() || 
+                (orderDateTime.getHours() === now.getHours() && orderDateTime.getMinutes() > now.getMinutes()) ||
+                (orderDateTime.getHours() === now.getHours() && orderDateTime.getMinutes() === now.getMinutes() && orderDateTime.getSeconds() > now.getSeconds())) {
+                orderDateTime.setDate(now.getDate() - 1); // 시간이 미래라면 어제로 설정
+            } else {
+                orderDateTime.setDate(now.getDate()); // 아니면 오늘로 설정
+            }
+            orderDateTime.setFullYear(now.getFullYear());
+            orderDateTime.setMonth(now.getMonth());
+
+        } else {
+            orderDateTime = new Date(); // 시간 정보가 없으면 현재 시간으로 폴백
+        }
+        div.setAttribute('data-order-time', orderDateTime.getTime()); // 밀리초 단위로 저장
+
+        const displayHeaderTime = orderGroup.orderTime ? orderGroup.orderTime.substring(0, 8) : '시간 정보 없음';
+
+        // orderGroup.items를 순회하여 메뉴 항목 HTML 생성
+        const itemsHTML = orderGroup.items
+            .map(item => {
+                let optionsHtml = '';
+                // 옵션 값이 null이나 비어있지 않은 경우에만 추가
+                if (item.temperature) optionsHtml += `<span>${item.temperature}</span>`;
+                if (item.beanType) optionsHtml += `<span>${item.beanType}</span>`; 
+                if (item.cupType) optionsHtml += `<span>${item.cupType}</span>`;
+                if (item.syrup) optionsHtml += `<span>${item.syrup}</span>`;
+
+                if (optionsHtml) {
+                    optionsHtml = `<div class="order-options">${optionsHtml}</div>`;
+                }
+
+                return `
+                    <p class="order-info">${item.name} - ${item.count}개</p>
+                    ${optionsHtml}
+                `;
+            })
+            .join("");
+
+        div.innerHTML = `
+            <div class="order-header">
+                <span class="order-title">주문테이블: ${orderGroup.userId}</span>
+                <span class="timer">00:00:00</span>
+            </div>
+            <div class="menu-items-scroll">
+                ${itemsHTML}
+            </div>
+            <div class="bottom-controls">
+                <span class="order-time">${displayHeaderTime}</span>
+                <button class="button" data-order-group-id="${orderGroup.orderGroupId}">준비 완료</button>
+            </div>
+        `;
+
+        container.appendChild(div);
+
+        // 메뉴 항목 클릭 이벤트 리스너 추가
+        const menuItems = div.querySelectorAll('.order-info');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('completed');
+            });
+        });
+        
+        // '준비 완료' 버튼 클릭 이벤트 리스너 추가
+        const completeButton = div.querySelector(".button");
+        if (completeButton) {
+            completeButton.addEventListener("click", function () {
+                const orderGroupId = this.getAttribute("data-order-group-id");
+                fetch(`/admin/complete/${orderGroupId}`, {
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content,
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if (res.ok) {
+                        alert("상태가 업데이트되었습니다.");
+                        // WebSocket을 통해 화면이 자동으로 갱신되므로 여기서는 추가 작업 불필요
+                    } else {
+                        alert("업데이트 실패");
+                    }
+                }).catch(error => {
+                    console.error("준비 완료 요청 실패:", error);
+                    alert("업데이트 중 오류가 발생했습니다.");
+                });
+            });
+        }
+    }
 
     // 경과 시간 갱신
     function updateElapsedTime() {
-      const timerElements = document.querySelectorAll(".timer");
       const screenElements = document.querySelectorAll(".order-card");
 
-      timerElements.forEach((timerElement, i) => {
-        if (orderTimes[i]) {
+      screenElements.forEach(card => {
+        const timerElement = card.querySelector(".timer");
+        const orderTimeMillis = parseInt(card.getAttribute('data-order-time'));
+
+        if (timerElement && !isNaN(orderTimeMillis)) {
+          const orderDateTime = new Date(orderTimeMillis);
           const currentTime = new Date();
-          const elapsedTime = Math.floor((currentTime - orderTimes[i]) / 1000);
+          const elapsedTime = Math.floor((currentTime - orderDateTime) / 1000);
           timerElement.textContent = formatTime(elapsedTime);
 
-          if (elapsedTime >= 600) {
-            screenElements[i].style.backgroundColor = "rgba(255, 0, 0, 0.2)";
-          } else if (elapsedTime >= 300) {
-            screenElements[i].style.backgroundColor = "rgba(255, 165, 0, 0.2)";
+          // 경과 시간에 따른 배경색 변경 (시각적 피드백)
+          if (elapsedTime >= 600) { // 10분 이상 (600초)
+            card.style.backgroundColor = "rgba(255, 0, 0, 0.2)"; // 연한 빨간색
+          } else if (elapsedTime >= 300) { // 5분 이상 (300초)
+            card.style.backgroundColor = "rgba(255, 165, 0, 0.2)"; // 연한 주황색
           } else {
-            screenElements[i].style.backgroundColor = "white";
+            card.style.backgroundColor = "white"; // 기본 흰색
           }
         }
       });
@@ -273,7 +395,7 @@
     // 1초마다 실행
     setInterval(updateElapsedTime, 1000);
 
-    // 시간 포맷팅
+    // 시간 포맷팅 도우미 함수
     function formatTime(seconds) {
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
@@ -281,6 +403,7 @@
       return pad(hours) + ":" + pad(minutes) + ":" + pad(secs);
     }
 
+    // 숫자 앞에 '0'을 붙여주는 도우미 함수 (예: 5 -> "05")
     function pad(num) {
       return (num < 10 ? "0" : "") + num;
     }

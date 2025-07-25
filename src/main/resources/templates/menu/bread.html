@@ -8,7 +8,7 @@
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <link rel="stylesheet" href="/css/options.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
       --primary-color: #4682B4; /* 스틸 블루 */
@@ -119,10 +119,8 @@
 
     .menu-item-image {
       width: 100%;
-      /* **수정됨: object-fit: contain;으로 변경** */
       object-fit: contain; /* 이미지가 잘리지 않고 전체가 보이도록 조정 */
       height: 250px; /* 고정 높이 유지, contain 사용 시 이미지 주변에 여백이 생길 수 있음 */
-      /* **추가됨: 여백을 위한 배경색 설정 (원하는 색상으로 변경 가능)** */
       background-color: var(--background-white); /* 이미지가 완전히 채워지지 않을 경우 흰색 여백 */
       border-radius: 8px;
       margin-bottom: 15px;
@@ -206,27 +204,6 @@
       box-sizing: border-box;
     }
 
-    .modal-content {
-      width: 90%;
-      max-width: 550px;
-      background: var(--background-white);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%) scale(0.95); /* 초기 스케일과 중앙 정렬 결합 */
-      opacity: 0;
-      animation: modalFadeIn 0.3s forwards;
-    }
-
-    @keyframes modalFadeIn {
-      to {
-        transform: translateX(-50%) scale(1); /* 최종 스케일과 중앙 정렬 결합 */
-        opacity: 1;
-      }
-    }
-
     .close {
       position: absolute;
       top: 15px;
@@ -261,22 +238,22 @@
         padding: 0 15px 30px 15px;
       }
     }
-
+    
     @media (max-width: 768px) {
       .page-header h1 {
         font-size: 32px;
       }
-
       .categories {
-        flex-wrap: wrap;
+        /* flex-wrap: wrap; */ /* 제거 */
         padding: 10px;
+        /* gap: 5px; (이미 상위 정의에 있으므로 제거할 필요 없음) */
       }
 
       .categories a {
         font-size: 18px;
         padding: 10px 5px;
-        margin: 5px;
-        flex-basis: 45%;
+        /* margin: 5px; */ /* 제거 */
+        /* flex-basis: 45%; */ /* 제거 */
       }
 
       .menu-grid {
@@ -316,10 +293,11 @@
         font-size: 28px;
       }
 
+      /* 480px 이하에서도 카테고리는 한 줄 유지 (flex-basis: 100% 제거) */
       .categories a {
         font-size: 16px;
         padding: 8px 3px;
-        flex-basis: 100%;
+        /* flex-basis: 100%; */ /* 제거 */
       }
 
       .menu-grid {
@@ -343,14 +321,6 @@
         font-size: 18px;
         padding: 10px 20px;
         margin: 30px auto;
-      }
-
-      .modal-content {
-        padding: 20px;
-      }
-
-      .close {
-        font-size: 28px;
       }
     }
   </style>
@@ -384,7 +354,7 @@
 </a>
 
 <div id="optionModal" class="modal">
-  <div class="modal-content">
+  <div class="modal-options">
     <button class="close" aria-label="닫기"><i class="fas fa-times"></i></button>
     <div id="optionFormContainer">
       </div>
