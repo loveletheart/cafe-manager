@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import java.util.*;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/menu")
@@ -28,23 +29,18 @@ public class MenuController {
     private CartRepository cartRepository;
 
     /**
-     * 기본 메뉴 페이지 (GET 요청)
-     * 사용자가 `/menu`로 접근하면 기본적으로 'coffee' 카테고리를 보여줌
-     */
-    @GetMapping
-    public ModelAndView showDefaultMenu(@RequestParam(defaultValue = "0") int page) {
-    	 // 리다이렉트 URL에 페이지 파라미터 포함
-        return new ModelAndView("redirect:/menu/coffee?page=" + page);
-    }
-
-    /**
      * 특정 카테고리 메뉴 페이지 (GET 요청)
      * 사용자가 `/menu/{category}`로 접근하면 해당 카테고리의 메뉴를 조회함
      * 예: `/menu/aid`, `/menu/cookie`
      */
-    @GetMapping("/{category}")
-    public ModelAndView getMenuByCategory(@PathVariable String category, @RequestParam(defaultValue = "0") int page) {
-        return getMenu(category, page);  // 해당 카테고리의 메뉴를 조회
+    @GetMapping({"", "/{category}"})
+    public ModelAndView getMenuByPath(@PathVariable Optional<String> category, // ✅ String 대신 Optional<String> 사용
+                                      @RequestParam(defaultValue = "0") int page) {
+        
+        // category가 없을 경우 (Optional이 비어있는 경우) "coffee"를 기본값으로 사용
+        String actualCategory = category.orElse("coffee");
+        
+        return getMenu(actualCategory, page); // 실제 메뉴 조회 로직 호출
     }
 
     /**
