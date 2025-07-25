@@ -7,9 +7,8 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-import myapp.entity.UserData;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,11 +19,13 @@ import java.util.Map;
 
 @Service
 public class QRCodeloginService {
-
-    private static final String QR_CODE_PATH = "src/main/resources/static/qr_codes/";
     
     @Autowired
     public QRTokenService qrTokenService;
+    
+
+    @Value("${app.qr.storage-path}")
+    private String qrCodeStoragePath;
     
     //회원가입시 QR코드 자동생성
     public String generateQRCode(String id,String baseUrl) {
@@ -33,17 +34,21 @@ public class QRCodeloginService {
             String qrLoginUrl = baseUrl + "/QRredirect?token=" + token;
             
             String qrFileName = id + "_qr.png";
-            String filePath = QR_CODE_PATH + qrFileName;
+            // String filePath = QR_CODE_PATH + qrFileName; 
+            String filePath = qrCodeStoragePath + qrFileName;
             
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             Map<EncodeHintType, Object> hints = new HashMap<>();
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
             BitMatrix bitMatrix = qrCodeWriter.encode(qrLoginUrl, BarcodeFormat.QR_CODE, 200, 200, hints);
+            // FileSystems.getDefault().getPath()를 사용하여 파일을 저장.
             Path path = FileSystems.getDefault().getPath(filePath);
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
-            return "/qr_codes/" + qrFileName; // 상대 경로 반환
+            String qrCodeWebUrl = "/qr_codes/" + id + "_qr.png"; 
+            return qrCodeWebUrl;
+            
         } catch (WriterException | IOException e) {
             e.printStackTrace();
             return null;

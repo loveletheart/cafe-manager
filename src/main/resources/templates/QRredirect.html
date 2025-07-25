@@ -1,37 +1,68 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="_csrf" content="${_csrf.token}" />
-	<meta name="_csrf_header" content="${_csrf.headerName}" />
+    
+    <meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    
     <title>QR 로그인 중...</title>
-    <script>
-        window.onload = function() {
-        	alert("QR token 받음");
-        	const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        	const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-            var token = new URLSearchParams(window.location.search).get("token");
-            
-            if (token) {
-                fetch("/QRlogin", {
-                    method: "POST",
-                    headers: { 
-                    	"Content-Type": "application/json", 
-                    	[csrfHeader]: csrfToken  // ✅ CSRF 토큰 추가
-                    },
-                    body: JSON.stringify({ token: token })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = "/menu"; // 로그인 성공 시 이동
-                    } else {
-                        alert("QR 코드 인증 실패");
-                        window.location.href = "/login";
-                    }
-                });
-            }
-        };
+    <script th:inline="javascript">
+    window.onload = function() {
+        alert("QR token 받음");
+        const csrfToken = /*[[${_csrf.token}]]*/ 'default_csrf_token'; 
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ 'default_csrf_header';
+        
+        var token = new URLSearchParams(window.location.search).get("token");
+
+        console.log('CSRF Token:', csrfToken);
+        console.log('CSRF Header:', csrfHeader);
+        console.log('URL Token:', token);
+
+        if (csrfToken === 'default_csrf_token' || csrfHeader === 'default_csrf_header') {
+            console.error("CSRF 토큰 또는 헤더가 Thymeleaf에 의해 올바르게 로드되지 않았습니다!");
+            alert("보안 설정 문제로 로그인할 수 없습니다. 서버 설정을 확인해주세요.");
+            window.location.href = "/login";
+            return; 
+        }
+
+        if (token) {
+            const baseUrl = window.location.protocol + "//" + window.location.host;
+
+            fetch(baseUrl + "/QRlogin", { 
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json", 
+                    [csrfHeader]: csrfToken 
+                },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "/menu";
+                } else {
+                    response.text().then(text => {
+                        alert("QR 코드 인증 실패: " + text);
+                        console.error("QR 인증 실패 서버 응답:", text);
+                    }).catch(error => {
+                        console.error("응답 본문 파싱 중 오류:", error);
+                        alert("QR 코드 인증 실패 (응답 파싱 오류).");
+                    });
+                    window.location.href = "/login";
+                }
+            })
+            .catch(error => {
+                console.error("Fetch API 호출 중 네트워크 오류 발생:", error);
+                alert("QR 로그인 중 네트워크 오류가 발생했습니다. 서버가 실행 중인지, 네트워크 연결을 확인해주세요.");
+                window.location.href = "/login";
+            });
+        } else {
+            alert("QR 토큰이 없습니다. 다시 시도해주세요.");
+            window.location.href = "/login";
+        }
+    };
     </script>
 </head>
 <body>

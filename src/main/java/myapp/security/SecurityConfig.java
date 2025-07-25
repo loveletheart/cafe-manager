@@ -24,8 +24,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/QRlogin", "/QRredirect").permitAll()
-                .anyRequest().authenticated()
+            		 .requestMatchers(
+                             "/css/**",         // CSS 파일 허용
+                             "/js/**",          // JavaScript 파일 허용
+                             "/images/**",      // 이미지 파일 허용
+                             "/qr_codes/**"     // QR 코드 이미지 파일 허용
+                         ).permitAll()
+            		 .requestMatchers(
+                                 "/login", 
+                                 "/register", 
+                                 "/QRlogin", 
+                                 "/QRredirect", 
+                                 "/QRredirect/**"
+                             ).permitAll()
+                             .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")

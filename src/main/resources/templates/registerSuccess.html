@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입 성공</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .qr-code-display {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    .qr-code-display img {
+      max-width: 200px;
+      height: auto;
+      border: 1px solid #ccc;
+      margin-top: 15px;
+    }
+    .qr-code-display p {
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    .qr-save-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .qr-save-link:hover {
+        background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-wrapper">
+    <h2>회원가입이 완료되었습니다!</h2>
+    <p>환영합니다, <strong th:text="${userId}"></strong>님!</p>
+    <p>QR 코드를 저장하거나 스캔하여 간편하게 로그인하세요.</p>
+
+    <div class="qr-code-display">
+      <img th:src="${qrCodeUrl}" alt="QR Code for Login">
+      <p>위 QR 코드를 저장하거나 모바일 기기로 스캔해주세요.</p>
+      <a th:href="${qrCodeUrl}" download="my_qr_code.png" class="qr-save-link">QR 코드 저장하기</a>
+    </div>
+
+    <p style="margin-top: 30px;">이제 <a th:href="@{/login}">로그인 페이지</a>로 이동하여 서비스를 이용하실 수 있습니다.</p>
+  </div>
+</body>
+</html>

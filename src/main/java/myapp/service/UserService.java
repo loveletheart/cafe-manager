@@ -3,6 +3,7 @@ package myapp.service;
 import myapp.entity.UserData;
 import myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +21,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private QRCodeloginService qrCodeloginService; // QR 토큰 서비스 추가
+    
+    @Value("${qr.base.url}") // application.properties에서 설정한 기본 URL 주입
+    private String qrBaseUrl;
 
     // 로그인 시 호출됨. 전달받은 ID를 이용하여 사용자 정보 조회
     @Override
@@ -35,16 +39,16 @@ public class UserService implements UserDetailsService {
     }
 
     // 회원가입 시 QR 코드 자동 생성
-    public boolean registerUser(String id, String password, String username, String role,String baseUrl) {
+    public String  registerUser(String id, String password, String username, String role) {
         if (userRepository.findById(id).isPresent()) {
-            return false; // 이미 존재하는 ID
+        	 return null; // 이미 존재하는 ID
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        String qrToken = qrCodeloginService.generateQRCode(id,baseUrl); // QR 토큰 생성
+        String qrCodePath = qrCodeloginService.generateQRCode(id, qrBaseUrl); // QR 토큰 생성
 
-        UserData newUser = new UserData(id, username, encodedPassword, role, qrToken);
+        UserData newUser = new UserData(id, username, encodedPassword, role, qrCodePath);
         userRepository.save(newUser);
-        return true;
+        return qrCodePath;
     }
 }

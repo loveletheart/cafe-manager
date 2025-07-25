@@ -5,8 +5,7 @@ import myapp.repository.UserRepository;
 import myapp.service.QRTokenService;
 import myapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,9 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 public class LoginController {
@@ -30,7 +27,9 @@ public class LoginController {
     @Autowired
     public QRTokenService qrTokenService;
     @Autowired
-    public UserRepository userRepository; 
+    public UserRepository userRepository;
+    @Value("${qr.base.url}") 
+    private String qrBaseUrl;
 
     @GetMapping("/login")
     public String showLoginPage(@RequestParam(value = "error", required = false) String error,
@@ -66,18 +65,24 @@ public class LoginController {
                                       HttpServletRequest httpRequest,
                                       Model model) {
     	String baseUrl = httpRequest.getScheme() + "://" + httpRequest.getServerName();
+    	
     	if ((httpRequest.getScheme().equals("http") && httpRequest.getServerPort() != 80) ||
                 (httpRequest.getScheme().equals("https") && httpRequest.getServerPort() != 443)) {
                 baseUrl += ":" + httpRequest.getServerPort();
             }
     	
-        boolean success = userService.registerUser(id, password, username, role,baseUrl);
+    	String qrCodeUrl = userService.registerUser(id, password, username, role);
         
-        if (!success) {
+        if (qrCodeUrl == null) {
             model.addAttribute("errorMessage", "이미 존재하는 ID 또는 Username입니다.");
             return "register"; // 실패 시 회원가입 페이지 다시 표시
         }
-        return "redirect:/menu"; // 성공 시 로그인 페이지로 이동
+        else
+        {
+        	model.addAttribute("qrCodeUrl", qrCodeUrl);
+            model.addAttribute("userId", id);
+            return "registerSuccess"; // 성공 시 로그인 페이지로 이동
+        }
     }
     
     /**
@@ -94,6 +99,7 @@ public class LoginController {
     @GetMapping("/QRredirect")
     public String qrRedirect(@RequestParam String token, Model model) {
         model.addAttribute("token", token);
+        model.addAttribute("baseUrl", qrBaseUrl); 
         return "QRredirect"; // 자동 POST 요청을 수행할 HTML 페이지 반환
     }
     
