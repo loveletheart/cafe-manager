@@ -19,6 +19,8 @@ public class SecurityConfig {
 
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +39,7 @@ public class SecurityConfig {
                                  "/QRredirect", 
                                  "/QRredirect/**"
                              ).permitAll()
+            		 		 .requestMatchers("/admin/**").hasAnyRole("ADMIN","MASTER") 
                              .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -53,7 +56,10 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            );
+            )
+            .exceptionHandling(exception -> exception
+                    .accessDeniedHandler(customAccessDeniedHandler)
+            		);
 
         return http.build();
     }
