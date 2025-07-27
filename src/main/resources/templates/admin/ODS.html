@@ -345,6 +345,8 @@
         if (completeButton) {
             completeButton.addEventListener("click", function () {
                 const orderGroupId = this.getAttribute("data-order-group-id");
+                const orderCard = this.closest('.order-card');
+                
                 fetch(`/admin/complete/${orderGroupId}`, {
                     method: "POST",
                     headers: {
@@ -353,14 +355,11 @@
                     }
                 }).then(res => {
                     if (res.ok) {
-                        alert("상태가 업데이트되었습니다.");
-                        // WebSocket을 통해 화면이 자동으로 갱신되므로 여기서는 추가 작업 불필요
+						if(orderCard)orderCard.remove();
                     } else {
-                        alert("업데이트 실패");
                     }
                 }).catch(error => {
                     console.error("준비 완료 요청 실패:", error);
-                    alert("업데이트 중 오류가 발생했습니다.");
                 });
             });
         }

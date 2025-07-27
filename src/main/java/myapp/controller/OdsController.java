@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,8 @@ public class OdsController {
 	
 	@Autowired
 	private OrderRepository oederrepository;
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 	
 	/**
      * ODS화면 출력
@@ -42,5 +46,28 @@ public class OdsController {
         List<Order> cartItems = oederrepository.findBySituationAndOrderDate("주문완료", LocalDate.now());
         
         return ResponseEntity.ok(cartItems); // JSON 응답 반환
+    }
+    
+    /**
+     * 준비가 완료된 주문을 '준비완료'인 상태로 데이터 변환 
+     */
+    @PostMapping("/complete/{orderGroupId}")
+    @ResponseBody
+    public ResponseEntity<String> completeOrdersInGroup(@PathVariable String orderGroupId) {
+    	try {
+    		List<Order> OrderList = oederrepository.findByOrderGroupId(orderGroupId);
+    		
+    		if(!OrderList.isEmpty()) {
+    			for(Order order : OrderList)order.setSituation("준비 완료");
+    			
+    			oederrepository.saveAll(OrderList);
+    			return new ResponseEntity<>("Order group " + orderGroupId + " marked as READY", HttpStatus.OK);
+    		}else {
+    			return new ResponseEntity<>("Order group with ID " + orderGroupId + " not found.", HttpStatus.NOT_FOUND);
+    		}
+    	}catch(Exception e) {
+    		e.printStackTrace();
+            return new ResponseEntity<>("Error updating order group status: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
     }
 }
