@@ -37,15 +37,6 @@ public class MenuService {
         
         cart.setDate(LocalDate.now());
         cart.setSit("주문완료");
-        
-        System.out.println("userId = " + userId);
-        System.out.println("menuName = " + menuName);
-        System.out.println("temperature = " + cart.getTemperature());
-        System.out.println("beanType = " + cart.getBeanType());
-        System.out.println("cupType = " + cart.getCupType());
-        System.out.println("date = " + cart.getDate());
-        System.out.println("sit = " + cart.getSit());
-
         Optional<Cart> existing = cartRepository.findSameCartItem(
             userId,
             menuName,

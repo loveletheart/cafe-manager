@@ -21,19 +21,29 @@ public class MenuItemContriller {
 	@Autowired
     private MenuItemService menuItemService;
 	
+	/**
+	 * 전체 메뉴 목록을 조회하여 관리자 페이지에 표시합니다.
+	 */
 	@GetMapping("/menus")
     public String listMenus(Model model) {
         model.addAttribute("menus", menuItemService.getAllMenus());
         return "admin/menucontroller/menu_list";
     }
     
+	/**
+	 * 새 메뉴를 등록하기 위한 빈 폼을 보여줍니다.
+	 */
 	@GetMapping("/add")
 	public String showAddForm(Model model) {
 	    model.addAttribute("menu", new Menu());
 	    model.addAttribute("actionUrl", "/admin/menucontroller/add");
 	    return "admin/menucontroller/menu_form";
 	}
-
+	
+	/**
+	 * 새 메뉴를 등록하고 이미지를 저장합니다.
+	 * 메뉴 이름 중복이나 이미지 확장자 유효성도 검사합니다.
+	 */
     @PostMapping("/add")
     public String addMenu(@ModelAttribute Menu menu,
             @RequestParam("image") MultipartFile imageFile,
@@ -79,7 +89,10 @@ public class MenuItemContriller {
         menuItemService.addMenu(menu);
         return "redirect:/admin/menucontroller/menus";
     }
-
+    
+    /**
+     * 기존 메뉴 정보를 수정하기 위한 폼을 보여줍니다.
+     */
     @GetMapping("/edit/{menuName}")
     public String showEditForm(@PathVariable String menuName, Model model) {
         Optional<Menu> menu = menuItemService.getMenuByName(menuName);
@@ -93,12 +106,18 @@ public class MenuItemContriller {
         }
     }
 
+    /**
+     * 수정된 메뉴 정보를 저장합니다.
+     */
     @PostMapping("/edit/{menuName}")
     public String updateMenu(@PathVariable String menuName, @ModelAttribute Menu menu) {
     	menuItemService.updateMenu(menuName, menu);
         return "redirect:/admin/menucontroller/menus";
     }
-
+    
+    /**
+     * 선택한 메뉴를 삭제하고 목록으로 이동합니다.
+     */
     @GetMapping("/delete/{menuName}")
     public String deleteMenu(@PathVariable String menuName,RedirectAttributes redirectAttributes) {
     	menuItemService.deleteMenu(menuName);

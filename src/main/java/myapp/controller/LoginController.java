@@ -30,7 +30,13 @@ public class LoginController {
     public UserRepository userRepository;
     @Value("${qr.base.url}") 
     private String qrBaseUrl;
-
+    
+    /**
+     * 로그인 요청일 들어올때
+     * 실패시
+     * error : 아이디 or 비밀번호 문제
+     * logout : 로그아웃 안내
+     */
     @GetMapping("/login")
     public String showLoginPage(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "logout", required = false) String logout,
