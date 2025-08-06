@@ -28,14 +28,8 @@ public class OrderService {
         this.cartRepository = cartRepository;
     }
 
-    /**
-     * 개별 주문들을 묶어 하나의 트랜잭션으로 처리하고 저장합니다.
-     * 장바구니에 담긴 항목들을 주문으로 변환하고, 해당 사용자의 장바구니를 비웁니다.
-     *
-     * @param orderRequests 클라이언트로부터 받은 주문 항목 리스트 (Order 엔티티 형태)
-     * @param userId 현재 주문하는 사용자의 ID
-     * @return 주문 및 장바구니 삭제 성공 시 true, 실패 시 false
-     */
+    //개별 주문들을 묶어 하나의 트랜잭션으로 처리하고 저장합니다.
+    //장바구니에 담긴 항목들을 주문으로 변환하고, 해당 사용자의 장바구니를 비웁니다.
     @Transactional
     public boolean processOrder(List<Order> orderRequests, String userId) {
         // 모든 개별 주문에 적용될 단일 주문 그룹 ID 생성
@@ -75,14 +69,8 @@ public class OrderService {
             return false; // 주문 실패
         }
     }
-
-    /**
-     * 특정 주문 상태를 가진 모든 주문 목록을 가져옵니다.
-     * (예: "주문완료" 상태의 주문들)
-     *
-     * @param situation 조회할 주문 상태 문자열
-     * @return 해당 상태를 가진 Order 엔티티 리스트
-     */
+    
+    //특정 주문 상태를 가진 모든 주문 목록을 가져옵니다.
     public List<Order> getCompletedOrders(String situation) {
         return orderRepository.findBySituation(situation);
     }
