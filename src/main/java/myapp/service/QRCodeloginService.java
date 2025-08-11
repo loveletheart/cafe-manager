@@ -34,7 +34,6 @@ public class QRCodeloginService {
             String qrLoginUrl = baseUrl + "/QRredirect?token=" + token;
             
             String qrFileName = id + "_qr.png";
-            // String filePath = QR_CODE_PATH + qrFileName; 
             String filePath = qrCodeStoragePath + qrFileName;
             
             QRCodeWriter qrCodeWriter = new QRCodeWriter();

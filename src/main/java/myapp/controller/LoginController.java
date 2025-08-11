@@ -70,12 +70,6 @@ public class LoginController {
                                       @RequestParam String role,
                                       HttpServletRequest httpRequest,
                                       Model model) {
-    	String baseUrl = httpRequest.getScheme() + "://" + httpRequest.getServerName();
-    	
-    	if ((httpRequest.getScheme().equals("http") && httpRequest.getServerPort() != 80) ||
-                (httpRequest.getScheme().equals("https") && httpRequest.getServerPort() != 443)) {
-                baseUrl += ":" + httpRequest.getServerPort();
-            }
     	
     	String qrCodeUrl = userService.registerUser(id, password, username, role);
         
