@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class MenuItemService {
@@ -17,8 +20,9 @@ public class MenuItemService {
     @Autowired
     private MenuItemRepository menuItemRepository;
 
-    public List<Menu> getAllMenus() {
-        return menuItemRepository.findAll();
+    public Page<Menu> getAllMenus(int page, int pageSize) {
+    	Pageable pageable = PageRequest.of(page, pageSize);
+    	return menuItemRepository.findAll(pageable);
     }
 
     public Optional<Menu> getMenuByName(String menuName) {
@@ -44,7 +48,7 @@ public class MenuItemService {
         return menuItemRepository.existsById(menuName);
     }
     
-    public List<Menu> findMenusByFilter(String menuName, String menuNameen, String type, Integer priceMin, Integer priceMax) {
+    public Page<Menu> findMenusByFilter(String menuName, String menuNameen, String type, Integer priceMin, Integer priceMax,int page,int pageSize) {
         Specification<Menu> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -70,12 +74,14 @@ public class MenuItemService {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
-
+        
+        Pageable pageable = PageRequest.of(page, pageSize);
+        
         // 검색 조건이 하나도 없는 경우 전체 목록을 반환하도록 처리
         if (menuName == null && menuNameen == null && type == null && priceMin == null && priceMax == null) {
-            return menuItemRepository.findAll();
+        	 return menuItemRepository.findAll(pageable);
         }
 
-        return menuItemRepository.findAll(spec);
+        return menuItemRepository.findAll(spec, pageable);
     }
 }

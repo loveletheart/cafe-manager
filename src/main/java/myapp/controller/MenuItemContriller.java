@@ -10,8 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 import java.nio.file.*;
@@ -30,8 +30,15 @@ public class MenuItemContriller {
 	 * 전체 메뉴 목록을 조회하여 관리자 페이지에 표시합니다.
 	 */
 	@GetMapping("/menus")
-    public String listMenus(Model model) {
-        model.addAttribute("menus", menuItemService.getAllMenus());
+    public String listMenus(Model model,@RequestParam(defaultValue = "0") int page) {
+		int pageSize = 20;
+		Page<Menu> menuPage = menuItemService.getAllMenus(page, pageSize);
+		
+		model.addAttribute("menus", menuPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", menuPage.getTotalPages());
+        model.addAttribute("totalItems", menuPage.getTotalElements());
+        
         return "admin/menucontroller/menu_list";
     }
     
@@ -44,10 +51,17 @@ public class MenuItemContriller {
                             @RequestParam(value = "menuNameen", required = false) String menuNameen,
                             @RequestParam(value = "type", required = false) String type,
                             @RequestParam(value = "priceMin", required = false) Integer priceMin,
-    						@RequestParam(value = "priceMax", required = false) Integer priceMax) {
+    						@RequestParam(value = "priceMax", required = false) Integer priceMax,
+    						@RequestParam(defaultValue = "0") int page){
+		int pageSize = 20;
 		
-		List<Menu> menus = menuItemService.findMenusByFilter(menuName, menuNameen, type, priceMin,priceMax);
-        model.addAttribute("menus", menus);
+		
+		Page<Menu> menus = menuItemService.findMenusByFilter(menuName, menuNameen, type, priceMin,priceMax,page,pageSize);
+		
+		model.addAttribute("menus", menus.getContent());
+		model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", menus.getTotalPages());
+        model.addAttribute("totalItems", menus.getTotalElements());
 
         return "admin/menucontroller/menu_list";
     }
