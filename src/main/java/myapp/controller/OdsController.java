@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpServletRequest;
 import myapp.entity.Order;
 import myapp.repository.OrderRepository;
 
@@ -70,4 +71,10 @@ public class OdsController {
             return new ResponseEntity<>("Error updating order group status: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     	}
     }
+    
+    @GetMapping("/ip")
+	public ResponseEntity<String> ip (HttpServletRequest request) {
+		// 요청을 보낸 클라이언트의 IP주소를 반환합니다.
+		return ResponseEntity.ok(request.getRemoteAddr());
+	}
 }

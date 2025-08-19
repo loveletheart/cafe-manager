@@ -8,8 +8,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "menu")
-@Getter
-@Setter
 @Data
 public class Menu {
 

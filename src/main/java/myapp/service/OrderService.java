@@ -6,8 +6,7 @@ import org.slf4j.Logger; // Logger import 추가
 import org.slf4j.LoggerFactory; // LoggerFactory import 추가
 
 import myapp.entity.Order;
-import myapp.repository.CartRepository;
-import myapp.repository.OrderRepository;
+import myapp.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

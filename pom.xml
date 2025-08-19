@@ -116,6 +116,8 @@
 	        <compilerArgs>
 	          <arg>--add-opens</arg>
 	          <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+	          <!-- 이 부분을 추가합니다 -->
+	          <arg>-parameters</arg>
 	        </compilerArgs>
 	      </configuration>
 	    </plugin>

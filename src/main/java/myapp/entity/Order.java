@@ -18,8 +18,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "orders") // 테이블 이름
 @Data
-@Getter
-@Setter
 public class Order {
 	
     @Id

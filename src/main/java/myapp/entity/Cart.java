@@ -8,11 +8,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "cart")
-@Getter @Setter
 @IdClass(CartId.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class Cart {
 
 	@Id
