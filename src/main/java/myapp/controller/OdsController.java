@@ -74,7 +74,7 @@ public class OdsController {
     
     @GetMapping("/ip")
 	public ResponseEntity<String> ip (HttpServletRequest request) {
-		// 요청을 보낸 클라이언트의 IP주소를 반환합니다.
+		// 요청을 보낸 클라이언트의 IP주소를 반환합니다.1
 		return ResponseEntity.ok(request.getRemoteAddr());
 	}
 }
