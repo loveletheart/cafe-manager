@@ -24,9 +24,6 @@ function App() {
             </li>
           </ul>
         </nav>
-
-        {/* 'Switch' 컴포넌트는 'Routes' 컴포넌트로 대체되었습니다. */}
-        {/* 'Routes'는 하위 'Route' 중 현재 URL과 일치하는 첫 번째 경로를 렌더링합니다. */}
         <Routes>
           {/* 'Route' 컴포넌트는 'element' 속성을 사용하여 렌더링할 컴포넌트를 지정합니다. */}
           <Route path="/about" element={<About />} />
