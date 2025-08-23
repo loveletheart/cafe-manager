@@ -39,12 +39,6 @@ function CompletedOrders() {
   useEffect(() => {
     // 컴포넌트가 처음 렌더링될 때 '준비완료' 주문 목록을 가져옵니다.
     fetchCompletedOrders();
-
-    // 5초마다 주문 목록을 새로고침합니다.
-    const intervalId = setInterval(fetchCompletedOrders, 5000);
-
-    // 컴포넌트가 언마운트될 때 인터벌을 정리합니다.
-    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) return <div className="text-center p-4">완료된 주문 목록을 불러오는 중...</div>;
