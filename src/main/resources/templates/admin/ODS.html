@@ -273,7 +273,6 @@
             orderDateTime.setHours(parseInt(timeParts[0]));
             orderDateTime.setMinutes(parseInt(timeParts[1]));
             orderDateTime.setSeconds(parseInt(secondsAndMillis[0]));
-            // 밀리초가 없는 경우를 위해 '0'으로 폴백
             orderDateTime.setMilliseconds(parseInt(secondsAndMillis[1] || '0')); 
             
             // 서버 시간과 클라이언트 시간 차이 보정 (날짜 부분)

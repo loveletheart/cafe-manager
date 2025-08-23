@@ -3,9 +3,12 @@ import axios from 'axios';
 import { format } from 'date-fns';
 
 function CompletedOrders() {
-  const [completedOrders, setCompletedOrders] = useState({}); // 그룹화된 주문을 저장할 객체
+  // 그룹화된 주문을 저장할 객체
+  const [completedOrders, setCompletedOrders] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   // '준비완료' 상태의 주문 목록을 가져오는 함수
   const fetchCompletedOrders = () => {
@@ -36,10 +39,41 @@ function CompletedOrders() {
       });
   };
 
+  // 주문을 다시 '주문완료' 상태로 되돌리는 함수
+  const handleRevertOrder = (orderGroupId) => {
+    // 주문 되돌리기 API 호출
+    axios.post(`/admin/revert/${orderGroupId}`)
+      .then(response => {
+        // 성공적으로 되돌려졌다면, 목록을 새로고침합니다.
+        console.log("Order reverted successfully:", response.data);
+        fetchCompletedOrders();
+        setModalMessage("주문이 성공적으로 되돌려졌습니다.");
+        setShowModal(true);
+      })
+      .catch(err => {
+        console.error("Error reverting order:", err);
+        setModalMessage("주문 되돌리기 실패: " + (err.response?.data || err.message));
+        setShowModal(true);
+      });
+  };
+
   useEffect(() => {
-    // 컴포넌트가 처음 렌더링될 때 '준비완료' 주문 목록을 가져옵니다.
+    // 컴포넌트가 마운트될 때 CSRF 토큰을 가져와 axios 기본 헤더에 설정
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    if (csrfToken && csrfHeader) {
+      axios.defaults.headers.common[csrfHeader] = csrfToken;
+    }
+
+    // 초기 주문 목록 가져오기
     fetchCompletedOrders();
   }, []);
+
+  const closeModal = () => {
+    setShowModal(false);
+    setModalMessage('');
+  };
 
   if (loading) return <div className="text-center p-4">완료된 주문 목록을 불러오는 중...</div>;
   if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
@@ -82,10 +116,33 @@ function CompletedOrders() {
                 </div>
                 <div className="bottom-controls absolute bottom-4 left-5 right-5 flex justify-between items-center pt-2 border-t border-gray-200">
                   <span className="order-time text-sm text-gray-500">완료 시간: {displayTime}</span>
+                  <button
+                    type="button"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+                    onClick={() => handleRevertOrder(orderGroup.orderGroupId)}
+                  >
+                    주문 완료 되돌리기
+                  </button>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
+          <div className="relative p-5 border w-96 shadow-lg rounded-md bg-white text-center">
+            <h3 className="text-xl font-bold mb-4">알림</h3>
+            <p className="text-sm text-gray-600 mb-6">{modalMessage}</p>
+            <div className="flex justify-center">
+              <button
+                onClick={closeModal}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                확인
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

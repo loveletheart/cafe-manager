@@ -25,41 +25,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-            		 .requestMatchers(
-                             "/css/**",         // CSS 파일 허용
-                             "/js/**",          // JavaScript 파일 허용
-                             "/images/**",      // 이미지 파일 허용
-                             "/qr_codes/**"     // QR 코드 이미지 파일 허용
-                         ).permitAll()
-            		 .requestMatchers(
-                                 "/login", 
-                                 "/register", 
-                                 "/QRlogin", 
-                                 "/QRredirect", 
-                                 "/QRredirect/**"
-                             ).permitAll()
-            		 		 .requestMatchers("/admin/**").hasAnyRole("ADMIN","MASTER") 
-                             .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .successHandler(customAuthenticationSuccessHandler)
-                .failureUrl("/login")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
-                .permitAll()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
-            .exceptionHandling(exception -> exception
-                    .accessDeniedHandler(customAccessDeniedHandler)
-            		);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/qr_codes/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/QRlogin",
+                                "/QRredirect",
+                                "/QRredirect/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "MASTER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(customAuthenticationSuccessHandler)
+                        .failureUrl("/login")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                );
 
         return http.build();
     }
