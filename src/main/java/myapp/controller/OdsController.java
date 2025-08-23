@@ -59,7 +59,7 @@ public class OdsController {
     		List<Order> OrderList = oederrepository.findByOrderGroupId(orderGroupId);
     		
     		if(!OrderList.isEmpty()) {
-    			for(Order order : OrderList)order.setSituation("준비 완료");
+    			for(Order order : OrderList)order.setSituation("준비완료");
     			
     			oederrepository.saveAll(OrderList);
     			return new ResponseEntity<>("Order group " + orderGroupId + " marked as READY", HttpStatus.OK);
@@ -72,9 +72,23 @@ public class OdsController {
     	}
     }
     
-    @GetMapping("/ip")
-	public ResponseEntity<String> ip (HttpServletRequest request) {
-		// 요청을 보낸 클라이언트의 IP주소를 반환합니다.1
-		return ResponseEntity.ok(request.getRemoteAddr());
-	}
+    /**
+     * '준비완료' 주문 리스트를 위한 React 페이지를 제공
+     */
+    @GetMapping("/completed")
+    public String showCompletedPage() {
+        return "admin/completed"; // src/main/resources/templates/admin/completed.html을 반환
+    }
+    
+    /**
+     * '준비완료' 주문 리스트를 위한 json데이터 제공
+     */
+    @GetMapping("/complete")
+    @ResponseBody
+    public ResponseEntity<List<Order>> getcompletes() {
+    	
+        List<Order> cartItems = oederrepository.findBySituationAndOrderDate("준비완료", LocalDate.now());
+        
+        return ResponseEntity.ok(cartItems); // JSON 응답 반환
+    }
 }
