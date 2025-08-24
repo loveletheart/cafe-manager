@@ -14,11 +14,6 @@ function App() {
         <nav className="mb-8">
           <ul className="flex justify-center space-x-4">
             <li>
-              <Link to="/admin/completed" className="text-blue-500 hover:text-blue-700 font-semibold transition-colors duration-200">
-                완료된 주문 (React)
-              </Link>
-            </li>
-            <li>
               <a href="/admin/ODS" className="text-green-500 hover:text-green-700 font-semibold transition-colors duration-200">
                 ODS 페이지 (HTML)
               </a>
