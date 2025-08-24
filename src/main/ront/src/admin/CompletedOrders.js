@@ -45,9 +45,7 @@ function CompletedOrders() {
     axios.post(`/admin/revert/${orderGroupId}`)
       .then(response => {
         // 성공적으로 되돌려졌다면, 목록을 새로고침합니다.
-        console.log("Order reverted successfully:", response.data);
         fetchCompletedOrders();
-        setModalMessage("주문이 성공적으로 되돌려졌습니다.");
         setShowModal(true);
       })
       .catch(err => {
