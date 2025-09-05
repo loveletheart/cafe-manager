@@ -2,127 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>장바구니</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
-   		.body {
-   			text-align: center;
-   		}
-   		
-		.main_text	{
-			text-align: center;
-		}
-		.center_table {
-		    display: flex;               /* flexbox 사용 */
-		    justify-content: center;     /* 수평 중앙 정렬 */
-		    align-items: center;         /* 수직 중앙 정렬 (필요한 경우) */
-		    margin: 0 auto;             /* 부모 요소의 여백을 자동으로 설정하여 중앙 정렬 */
-		}
-		
-		table {
-			border: 1px solid #ccc;
-		    border-collapse: collapse;   /* 테이블 경계 선을 겹쳐서 표시 */
-		    width: 95%;
-		    margin: 0 auto;
-		}
-		
-		th, td {
-		    border: 1px solid #ddd;      /* 셀 테두리 */
-		    padding: 8px;                /* 셀 안쪽 여백 */
-		    text-align: center;          /* 텍스트 중앙 정렬 */
-		}
-		.back-button {
-		    display: inline-block;         /* 버튼처럼 보이게 설정 */
-		    padding: 12px 24px;            /* 버튼 내부 여백 */
-		    font-size: 16px;               /* 글자 크기 */
-		    color: white;                  /* 글자 색상 */
-		    background-color: #ff6666;     /* 버튼 배경색 (붉은색 계열) */
-		    border: none;                  /* 테두리 제거 */
-		    border-radius: 20px;           /* 모서리 둥글게 */
-		    text-decoration: none;         /* 링크 밑줄 제거 */
-		    cursor: pointer;               /* 커서를 포인터로 변경 */
-		    transition: background-color 0.3s ease; /* 호버 시 배경색 전환 효과 */
-		}
-		.payment-button {
-		    display: inline-block;         /* 버튼처럼 보이게 설정 */
-		    padding: 12px 24px;            /* 버튼 내부 여백 */
-		    font-size: 16px;               /* 글자 크기 */
-		    color: white;                  /* 글자 색상 */
-		    background-color: #2699E6;     /* 버튼 배경색 (파란색 계열) */
-		    border: none;                  /* 테두리 제거 */
-		    border-radius: 20px;           /* 모서리 둥글게 */
-		    text-decoration: none;         /* 링크 밑줄 제거 */
-		    cursor: pointer;               /* 커서를 포인터로 변경 */
-		    transition: background-color 0.3s ease; /* 호버 시 배경색 전환 효과 */
-		}
-		div[style*="margin-top: 100px;"] p {
-	        margin: 0;
-	        color: #333;
-    	}
-    	input[type="number"]::-webkit-inner-spin-button, 
-		input[type="number"]::-webkit-outer-spin-button {
-		    -webkit-appearance: none;
-		    margin: 0;
-		}
-		.quantity-control {
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    gap: 5px; /* 버튼과 숫자 간격 */
-		}
-		
-		.quantity-control input {
-		    width: 40px;
-		    text-align: center;
-		    border: none; /* 테두리 제거 */
-		    background-color: transparent; /* 투명 배경 */
-		    pointer-events: none; /* 직접 클릭 불가 */
-		}
-		
-		.quantity-control button {
-		    width: 30px;
-		    height: 30px;
-		    border: none;
-		    background-color: whihte; /* 버튼 색상 */
-		    color: black;
-		    border-radius: 50%; /* 둥근 버튼 */
-		    cursor: pointer;
-		    font-size: 18px;
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		}
-		
-		.quantity-control button:hover {
-		    background-color: #c0392b; /* 호버 효과 */
-		}
-		.menu-options {
-		    font-size: 18px;
-		    color: gray;
-		    margin-top: 4px;
-		    display: block;
-		}
-		.loading-message {
-		    margin-top: 10px;
-		    font-size: 18px;
-		    color: #555;
-		    font-weight: bold;
-		    display: none; /* 기본적으로 숨김 */
-		}
+        .body { text-align: center; }
+        .main_text { text-align: center; }
+        .center_table { display: flex; justify-content: center; align-items: center; margin: 0 auto; }
+        table { border: 1px solid #ccc; border-collapse: collapse; width: 95%; margin: 0 auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .back-button, .payment-button {
+            display: inline-block; padding: 12px 24px; font-size: 16px; color: white; border: none; border-radius: 20px;
+            text-decoration: none; cursor: pointer; transition: background-color 0.3s ease;
+        }
+        .back-button { background-color: #ff6666; }
+        .payment-button { background-color: #2699E6; }
+        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .quantity-control input { width: 40px; text-align: center; border: none; background-color: transparent; pointer-events: none; }
+        .quantity-control button { width: 30px; height: 30px; border: none; background-color: white; color: black; border-radius: 50%; cursor: pointer; font-size: 18px; }
+        .quantity-control button:hover { background-color: #c0392b; color: white; }
+        .menu-options { font-size: 18px; color: gray; margin-top: 4px; display: block; }
+        .loading-message { margin-top: 10px; font-size: 18px; color: #555; font-weight: bold; display: none; }
     </style>
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body>
     <h1 class="main_text">장바구니</h1>
-    
-    <div th:if="${cartItems.size() > 0}" class="center_table" style="display: flex; flex-direction: column; align-items: center;">
-        <table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
+
+    <div th:if="${cartItems.size() > 0}" class="center_table" style="flex-direction: column; align-items: center;">
+        <table>
             <thead>
                 <tr style="background-color: #f2f2f2;">
                     <td style="width: 50%;">메뉴 이름</td>
-			        <td style="width: 25%;">수량</td>
-			        <td style="width: 25%;">가격</td>
+                    <td style="width: 25%;">수량</td>
+                    <td style="width: 25%;">가격</td>
                 </tr>
             </thead>
             <tbody>
@@ -132,212 +46,117 @@
                              data-bean-type=${cartItem.beanType},
                              data-cup-type=${cartItem.cupType},
                              data-syrup=${cartItem.syrup},
-                             data-user-id=${cartItem.userId}"> <td>
-	                	<div style="display: flex; align-items: center;">
-						    <img th:src="@{|/images/${cartItem.menuNameen}.jpg|}" 
-						         th:alt="${cartItem.menuNameen}" 
-						         style="width:100px; height:100px; margin-right: 10px;">
-						         
-						    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-						        <div th:text="${cartItem.menuName}" 
-						             style="font-size: 25px; font-weight: 1000; margin-bottom: 4px;">
-						            메뉴 이름
-						        </div>
-						        <div class="menu-options"
-						             th:text="${cartItem.temperature} + ' / ' + ${cartItem.beanType} + ' / ' + ${cartItem.cupType} + ' / ' + ${cartItem.syrup}">
-						            옵션 정보
-						        </div>
-						    </div>
-						</div>
-                	</td>
-                   	<td>
-				        <div class="quantity-control">
-				            <button class="decrease-btn">-</button>
-				            <input 
-				                type="number" 
-				                class="item-count" 
-				                th:value="${cartItem.count}"
-				                style="font-size: 25px"
-				                readonly
-				            >
-				            <button class="increase-btn">+</button>
-				        </div>
-				    </td>
-                    <td th:text="${cartItem.price * cartItem.count}+ '원'" style="font-weight: 1000; font-size: 20px;">가격</td>
+                             data-user-id=${cartItem.userId}">
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <img th:src="@{|/images/${cartItem.menuNameen}.jpg|}" th:alt="${cartItem.menuNameen}" style="width:100px; height:100px; margin-right: 10px;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                <div th:text="${cartItem.menuName}" style="font-size: 25px; font-weight: 1000; margin-bottom: 4px;"></div>
+                                <div class="menu-options" th:text="${cartItem.temperature} + ' / ' + ${cartItem.beanType} + ' / ' + ${cartItem.cupType} + ' / ' + ${cartItem.syrup}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="quantity-control">
+                            <button class="decrease-btn">-</button>
+                            <input type="number" class="item-count" th:value="${cartItem.count}" style="font-size: 25px" readonly>
+                            <button class="increase-btn">+</button>
+                        </div>
+                    </td>
+                    <td th:text="${cartItem.price * cartItem.count}+ '원'" style="font-weight: 1000; font-size: 20px;"></td>
                 </tr>
             </tbody>
         </table>
-        
+
         <div style="margin-top: 20px;">
-	        <p style="font-size: 18px; font-weight: bold; font-size: 25px;">
-	            총 금액: <span id="total-sum" th:text="${totalPrice}">0</span>원
-	        </p>
-	    </div>
+            <p style="font-size: 25px; font-weight: bold;">총 금액: <span id="total-sum" th:text="${totalPrice}">0</span>원</p>
+        </div>
     </div>
-    
+
     <div th:if="${cartItems.size() == 0}">
         <p>장바구니가 비었습니다.</p>
     </div>
-    
+
     <div style="margin-top: 20px; text-align: center;">
         <a href="/menu" class="back-button">메뉴로 돌아가기</a>
         <button class="payment-button" id="checkoutButton">구매하기</button>
         <div id="loadingMessage" class="loading-message">주문 처리 중입니다... 잠시만 기다려 주세요.</div>
     </div>
-    
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script>
-    const csrfToken = $("meta[name='_csrf']").attr("content");
-    const csrfHeader = $("meta[name='_csrf_header']").attr("content");
-
-    // WebSocket 연결
     let stompClient = null;
 
+    // WebSocket 연결
     function connectWebSocket() {
-        const socket = new SockJS("/ws/order"); // 서버의 WebSocket 엔드포인트
+        const socket = new SockJS("/ws/order");
         stompClient = Stomp.over(socket);
-
         stompClient.connect({}, function () {
             console.log("웹소켓 연결 성공");
+            // 서버로부터의 주문 상태 응답을 구독합니다.
+            stompClient.subscribe("/user/queue/order-status", function (message) {
+                const result = JSON.parse(message.body);
+                if (result.status === "success") {
+                    alert("주문이 완료되었습니다!");
+                    window.location.href = "/menu";
+                } else {
+                    alert("주문 처리 중 오류가 발생했습니다: " + result.message);
+                    // 오류 발생 시 UI를 원래대로 복구합니다.
+                    isProcessingOrder = false;
+                    $("#checkoutButton").prop("disabled", false).text("구매하기");
+                    $("#loadingMessage").hide();
+                }
+            });
+            setupButtonListeners();
         });
     }
 
-    // 연결 시도
-    connectWebSocket();
+    let isProcessingOrder = false;
 
-    // DOM 준비 시 수량 버튼 로직
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.increase-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const row = this.closest('tr');
-                const itemId = row.getAttribute('data-menu-name');
-                const countInput = row.querySelector('.item-count');
-                const newCount = parseInt(countInput.value) + 1;
-                updateItemCount(itemId, newCount, countInput);
-            });
-        });
-
-        document.querySelectorAll('.decrease-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const row = this.closest('tr');
-                const itemId = row.getAttribute('data-menu-name');
-                const countInput = row.querySelector('.item-count');
-                const newCount = Math.max(parseInt(countInput.value) - 1, 0);
-                updateItemCount(itemId, newCount, countInput);
-            });
-        });
-
-        function updateItemCount(itemId, newCount, countInput) {
-            $.ajax({
-                url: '/menu/cart/update',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ menuName: itemId, count: newCount }),
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader(csrfHeader, csrfToken);
-                },
-                success: function (data) {
-                    if (data.success) {
-                        countInput.value = newCount;
-                        const totalCell = $(countInput).closest('tr').find('td:nth-last-child(1)');
-                        totalCell.text(data.updatedPrice + '원');
-                        updateTotalSum(data.totalSum);
-                    } else {
-                        alert('수량 업데이트에 실패했습니다.');
-                    }
-                },
-                error: function () {
-                    alert('요청 처리 중 오류가 발생했습니다.');
-                }
-            });
-        }
-
-        function updateTotalSum(newTotalSum) {
-            document.getElementById('total-sum').textContent = newTotalSum;
-        }
-    });
-
-    // 구매 버튼 클릭
-    $(document).ready(function () {
-    	const checkoutButton = $("#checkoutButton");
-        const loadingMessage = $("#loadingMessage");
-        let isProcessingOrder = false; // 중복 주문 방지를 위한 플래그
-        
+    function setupButtonListeners() {
         $("#checkoutButton").click(function () {
-            // 이미 주문 처리 중이면 아무것도 하지 않음
-            if (isProcessingOrder) {
-                return;
-            }
+            if (isProcessingOrder) return;
 
             const cartItems = [];
-
             $("tr[data-menu-name]").each(function () {
-                const row = $(this); // 현재 tr 요소를 jQuery 객체로 저장
+                const row = $(this);
                 const menuName = row.attr("data-menu-name");
                 const quantity = parseInt(row.find(".item-count").val());
                 const priceText = row.find("td:nth-last-child(1)").text();
-                // 'N원' 형식에서 '원'을 제거하고 숫자로 변환
                 const totalItemPrice = parseInt(priceText.replace("원", "").trim());
-                // 단가는 총 가격을 수량으로 나눈 값 (서버에서 개당 가격을 직접 받는 것이 더 정확할 수 있음)
-                const price = totalItemPrice / quantity; 
+                const price = totalItemPrice / quantity;
 
-                // HTML에 추가된 데이터 속성에서 옵션 정보 가져오기
                 const temperature = row.attr("data-temperature");
                 const beanType = row.attr("data-bean-type");
                 const cupType = row.attr("data-cup-type");
                 const syrup = row.attr("data-syrup");
-                const userId = row.attr("data-user-id"); // userId 가져오기
+                const userId = row.attr("data-user-id");
 
                 if (quantity > 0) {
                     cartItems.push({ 
-                        menuName, 
-                        quantity, 
-                        price, 
-                        userId,
-                        temperature, // 옵션 정보 포함
-                        beanType,    // 옵션 정보 포함
-                        cupType,     // 옵션 정보 포함
-                        syrup        // 옵션 정보 포함
+                        menuName, quantity, price, userId,
+                        temperature, beanType, cupType, syrup
                     });
                 }
             });
 
             if (cartItems.length === 0) {
-                alert("장바구니가 비어 있습니다.");
+                alert("장바구니가 비었습니다.");
                 return;
             }
-            
-            // 구매하기 버튼 클릭 시 중복 구매를 막기 위해 주문 처리 안내 멘트 보여주기
+
+            // UI 변경
             isProcessingOrder = true;
-            checkoutButton.prop("disabled", true).text("주문 처리 중...");
-            loadingMessage.show();
-            
-            // 주문 AJAX 전송
-            $.ajax({
-                url: "/order/checkout", // 서버의 주문 API 엔드포인트
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(cartItems),
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader(csrfHeader, csrfToken);
-                },
-                success: function (response) {
-                    alert("주문이 완료되었습니다!");
-                    // 주문 완료 후 장바구니 비우기 또는 다른 페이지로 이동
-                    window.location.href = "/menu/coffee"; // 예시: 커피 메뉴 페이지로 이동
-                },
-                error: function (xhr, status, error) {
-                    console.error("주문 처리 중 오류 발생:", xhr.responseText);
-                    alert("주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
-                    // 오류 발생 시 버튼 상태 복원
-                    isProcessingOrder = false;
-                    checkoutButton.prop("disabled", false).text("구매하기");
-                    loadingMessage.hide();
-                }
-            });
+            $("#checkoutButton").prop("disabled", true).text("주문 처리 중...");
+            $("#loadingMessage").show();
+
+            // WebSocket으로 주문 전송
+            stompClient.send("/pub/order/check", {}, JSON.stringify(cartItems));
         });
+    }
+
+    // 페이지 로드 시 웹소켓 연결 시작
+    $(document).ready(function () {
+        connectWebSocket();
     });
 </script>
 </body>
