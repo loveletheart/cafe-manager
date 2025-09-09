@@ -22,9 +22,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private QRCodeloginService qrCodeloginService; // QR 토큰 서비스 추가
     
-    @Value("${qr.base.url}") // application.properties에서 설정한 기본 URL 주입
-    private String qrBaseUrl;
-
     // 로그인 시 호출됨. 전달받은 ID를 이용하여 사용자 정보 조회
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
@@ -39,11 +36,11 @@ public class UserService implements UserDetailsService {
     }
 
     // 회원가입 시 QR 코드 자동 생성
-    public String  registerUser(String id, String password, String username, String role) {
+    public String  registerUser(String id, String password, String username, String role,String qrBaseUrl) {
         if (userRepository.findById(id).isPresent()) {
         	 return null; // 이미 존재하는 ID
         }
-
+        
         String encodedPassword = passwordEncoder.encode(password);
         String qrCodePath = qrCodeloginService.generateQRCode(id, qrBaseUrl); // QR 토큰 생성
 

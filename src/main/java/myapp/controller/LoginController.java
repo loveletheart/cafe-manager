@@ -70,8 +70,8 @@ public class LoginController {
                                       @RequestParam String role,
                                       HttpServletRequest httpRequest,
                                       Model model) {
-    	
-    	String qrCodeUrl = userService.registerUser(id, password, username, role);
+    	String baseUrl = httpRequest.getScheme() + "://" + httpRequest.getServerName() + ":" + httpRequest.getServerPort();
+    	String qrCodeUrl = userService.registerUser(id, password, username, role,baseUrl);
         
         if (qrCodeUrl == null) {
             model.addAttribute("errorMessage", "이미 존재하는 ID 또는 Username입니다.");

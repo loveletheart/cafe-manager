@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
@@ -35,8 +36,9 @@ public class UserData implements UserDetails {
     @Column(nullable = false)
     private String role;
 
-    @Column(unique = true)
-    private String qrCode; // QR 코드 저장 필드
+    @Lob
+    @Column(name = "qr_code", columnDefinition = "LONGTEXT")
+    private String qrCode;
 
     // 기본 생성자
     public UserData() {}

@@ -25,16 +25,17 @@
       color: #333;
     }
     .qr-save-link {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
     .qr-save-link:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -45,12 +46,29 @@
     <p>QR 코드를 저장하거나 스캔하여 간편하게 로그인하세요.</p>
 
     <div class="qr-code-display">
+      <!-- Base64 QR 코드 직접 출력 -->
       <img th:src="${qrCodeUrl}" alt="QR Code for Login">
       <p>위 QR 코드를 저장하거나 모바일 기기로 스캔해주세요.</p>
-      <a th:href="${qrCodeUrl}" download="my_qr_code.png" class="qr-save-link">QR 코드 저장하기</a>
+      
+      <!-- Base64 → 이미지 다운로드 (JS 방식) -->
+      <a href="javascript:void(0)" class="qr-save-link" onclick="downloadQR()">QR 코드 저장하기</a>
     </div>
 
     <p style="margin-top: 30px;">이제 <a th:href="@{/login}">로그인 페이지</a>로 이동하여 서비스를 이용하실 수 있습니다.</p>
   </div>
+
+  <script>
+    function downloadQR() {
+      // img 태그에서 Base64 소스 가져오기
+      const img = document.querySelector(".qr-code-display img");
+      const base64 = img.src;
+
+      // Base64 → Blob 변환
+      const a = document.createElement("a");
+      a.href = base64;
+      a.download = "my_qr_code.png";
+      a.click();
+    }
+  </script>
 </body>
 </html>
