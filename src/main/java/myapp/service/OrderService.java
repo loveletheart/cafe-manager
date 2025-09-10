@@ -45,7 +45,7 @@ public class OrderService {
 
             // 각 주문 요청 항목에 그룹 ID, 사용자 ID, 상태, 날짜/시간 설정
             List<Order> ordersToSave = orderRequests.stream()
-                .peek(order -> { // peek을 사용하여 스트림 요소를 변경
+                .peek(order -> {
                     order.setOrderGroupId(orderGroupId);
                     order.setUserId(userId);
                     order.setSituation("주문완료");
@@ -56,15 +56,13 @@ public class OrderService {
             // 모든 주문 항목을 한 번의 배치 작업으로 저장
             orderRepository.saveAll(ordersToSave);
 
-            // 주문이 성공적으로 저장되면 해당 사용자의 장바구니를 비웁니다.
+            // 주문이 성공적으로 저장되면 해당 사용자의 장바구니를 초기화
             cartRepository.deleteByUserId(userId);
 
             logger.info("사용자 '{}'의 주문이 성공적으로 처리되었습니다. 주문 그룹 ID: {}", userId, orderGroupId);
             return true; // 주문 및 장바구니 삭제 성공
         } catch (Exception e) {
-            // 오류 발생 시 로그 기록 및 트랜잭션 롤백
             logger.error("사용자 '{}'의 주문 처리 중 오류 발생: {}", userId, e.getMessage(), e);
-            // 트랜잭션은 @Transactional에 의해 자동으로 롤백됩니다.
             return false; // 주문 실패
         }
     }

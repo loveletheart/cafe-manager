@@ -86,28 +86,36 @@
 <script>
     let stompClient = null;
 
-    // WebSocket 연결
+ // 수정된 connectWebSocket 함수
     function connectWebSocket() {
         const socket = new SockJS("/ws/order");
         stompClient = Stomp.over(socket);
-        stompClient.connect({}, function () {
+
+        const connectCallback = function() {
             console.log("웹소켓 연결 성공");
+            
             // 서버로부터의 주문 상태 응답을 구독합니다.
-            stompClient.subscribe("/user/queue/order-status", function (message) {
+            stompClient.subscribe("/sub/orders", function (message) {
                 const result = JSON.parse(message.body);
                 if (result.status === "success") {
                     alert("주문이 완료되었습니다!");
-                    window.location.href = "/menu";
+                    window.location.href = "/menu/coffee";
                 } else {
                     alert("주문 처리 중 오류가 발생했습니다: " + result.message);
-                    // 오류 발생 시 UI를 원래대로 복구합니다.
                     isProcessingOrder = false;
                     $("#checkoutButton").prop("disabled", false).text("구매하기");
                     $("#loadingMessage").hide();
                 }
             });
             setupButtonListeners();
-        });
+        };
+
+        const errorCallback = function(error) {
+            console.error("STOMP 연결 실패:", error);
+            alert("서버 연결에 실패했습니다. 페이지를 새로고침하거나 잠시 후 다시 시도해주세요.");
+        };
+
+        stompClient.connect({}, connectCallback, errorCallback);
     }
 
     let isProcessingOrder = false;
@@ -115,6 +123,7 @@
     function setupButtonListeners() {
         $("#checkoutButton").click(function () {
             if (isProcessingOrder) return;
+            console.log("주문 버튼 클릭 - 주문 메시지 전송 시작");
 
             const cartItems = [];
             $("tr[data-menu-name]").each(function () {
@@ -144,17 +153,15 @@
                 return;
             }
 
-            // UI 변경
             isProcessingOrder = true;
             $("#checkoutButton").prop("disabled", true).text("주문 처리 중...");
             $("#loadingMessage").show();
 
-            // WebSocket으로 주문 전송
+            // 주문 데이터를 JSON 문자열로 변환하여 서버에 전송
             stompClient.send("/pub/order/check", {}, JSON.stringify(cartItems));
         });
     }
 
-    // 페이지 로드 시 웹소켓 연결 시작
     $(document).ready(function () {
         connectWebSocket();
     });

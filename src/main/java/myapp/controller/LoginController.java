@@ -67,10 +67,10 @@ public class LoginController {
     public String processRegistration(@RequestParam String id,
                                       @RequestParam String password,
                                       @RequestParam String username,
-                                      @RequestParam String role,
                                       HttpServletRequest httpRequest,
                                       Model model) {
     	String baseUrl = httpRequest.getScheme() + "://" + httpRequest.getServerName() + ":" + httpRequest.getServerPort();
+    	String role = "user";
     	String qrCodeUrl = userService.registerUser(id, password, username, role,baseUrl);
         
         if (qrCodeUrl == null) {
