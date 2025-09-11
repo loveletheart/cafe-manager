@@ -69,7 +69,6 @@ public class MenuService {
     //장바구니에 있는 개수 조절시 실행되는 api
     public boolean updateCartItem(String userId, String menuName, int count) {
         Optional<Cart> existingCart = cartRepository.findByuserIdAndMenuName(userId, menuName);
-
         if (existingCart.isPresent()) {
             Cart cart = existingCart.get();
             cart.setCount(count);

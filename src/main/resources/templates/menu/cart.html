@@ -85,7 +85,9 @@
 
 <script>
     let stompClient = null;
-
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+    
  // 수정된 connectWebSocket 함수
     function connectWebSocket() {
         const socket = new SockJS("/ws/order");
@@ -119,6 +121,63 @@
     }
 
     let isProcessingOrder = false;
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		        // 수량 증가 버튼
+		        document.querySelectorAll('.increase-btn').forEach(button => {
+		            button.addEventListener('click', function () {
+		                const row = this.closest('tr');
+		                const itemId = row.getAttribute('data-menu-name');
+		                const countInput = row.querySelector('.item-count');
+		                const newCount = parseInt(countInput.value) + 1;
+		
+		                updateItemCount(itemId, newCount, countInput);
+		            });
+		        });
+		
+		        // 수량 감소 버튼
+		        document.querySelectorAll('.decrease-btn').forEach(button => {
+		            button.addEventListener('click', function () {
+		                const row = this.closest('tr');
+		                const itemId = row.getAttribute('data-menu-name');
+		                const countInput = row.querySelector('.item-count');
+		                const newCount = Math.max(parseInt(countInput.value) - 1, 0);
+		
+		                updateItemCount(itemId, newCount, countInput);
+		            });
+		        });
+		
+		        // AJAX로 수량 업데이트
+		        function updateItemCount(itemId, newCount, countInput) {
+		            fetch('/menu/cart/update', {
+		                method: 'POST',
+		                headers: { 'Content-Type': 'application/json' ,
+		                	[csrfHeader]: csrfToken 
+		                	},
+		                body: JSON.stringify({ menuName: itemId, count: newCount })
+		            })
+		            .then(response => response.json())
+		            .then(data => {
+		                if (data.success) {
+		                    // 새로운 수량 및 가격 업데이트
+		                    countInput.value = newCount;
+		                    const totalCell = countInput.closest('tr').querySelector('td:nth-last-child(1)');
+		                    totalCell.textContent = data.updatedPrice + '원';
+		
+		                    // 전체 합계 업데이트
+		                    updateTotalSum(data.totalSum);
+		                } else {
+		                    alert('수량 업데이트에 실패했습니다.');
+		                }
+		            })
+		            .catch(err => console.error('Error:', err));
+		        }
+				
+		        //전체 정보 업데이트
+		        function updateTotalSum(newTotalSum) {
+		            document.getElementById('total-sum').textContent = newTotalSum;
+		        }
+		    });
 
     function setupButtonListeners() {
         $("#checkoutButton").click(function () {
