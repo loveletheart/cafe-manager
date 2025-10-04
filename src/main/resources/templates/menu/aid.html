@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>커피 메뉴</title>
+  <title>AID MENU</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta name="_csrf" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -327,7 +327,7 @@
 </head>
 <body>
 <header class="page-header">
-  <h1>커피 메뉴</h1>
+  <h1>AID MENU</h1>
 </header>
 
 <nav class="categories">
@@ -362,92 +362,34 @@
 </div>
 
 <script>
-  $(document).ready(function () {
-    const csrfToken = $('meta[name="_csrf"]').attr('content');
-    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+	$(document).ready(function() {
+        // addToCart 함수 정의
+        window.addToCart = function(menuName) {
+            $.ajax({
+                type: 'POST',
+                url: '/menu/options/add',
+                data: JSON.stringify({ menuName: menuName }),
+                contentType: 'application/json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 추가
+                },
+                success: function(response) {
+                    alert("상품이 장바구니에 추가되었습니다.");
+                },
+                error: function(xhr, status, error) {
+                    alert("장바구니 추가에 실패했습니다.");
+                }
+            });
+        };
 
-    function openModal() {
-      $('#optionModal').fadeIn();
-      $('body').addClass('no-scroll');
-    }
-
-    function closeModal() {
-      $('#optionModal').fadeOut();
-      $('body').removeClass('no-scroll');
-    }
-
-    $('.add-to-cart-button').click(function () {
-      const menuName = $(this).data('menuname');
-      $.ajax({
-        url: '/menu/order/' + encodeURIComponent(menuName),
-        method: 'GET',
-        success: function (html) {
-          $('#optionFormContainer').html(html);
-          openModal();
-        },
-        error: function () {
-          alert('옵션 정보를 불러오지 못했습니다.');
-        }
-      });
-    });
-
-    $('#optionModal').on('click', function (e) {
-      if (e.target.id === 'optionModal') {
-        closeModal();
-      }
-    });
-
-    $('#optionModal .close').click(function () {
-      closeModal();
-    });
-
-    $('#optionFormContainer').on('submit', '#optionForm', function (e) {
-        e.preventDefault();
-
-        let valid = true;
-        $('#temp-error, #cup-error','#bean-error').hide();
-
-        if (!$('input[name="temperature"]:checked').length) {
-          $('#temp-error').show();
-          valid = false;
-        }
-
-        if (!$('input[name="beanType"]:checked').length) {
-            $('#bean-error').show();
-            valid = false;
-          }
-
-        if (!$('input[name="cupType"]:checked').length) {
-          $('#cup-error').show();
-          valid = false;
-        }
-
-        if (!valid) return;
-
-        const form = $(this);
-        const formData = form.serialize();
-
-        const csrfToken = $('meta[name="_csrf"]').attr('content');
-        const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-
-        $.ajax({
-          url: form.attr('action'),
-          type: 'POST',
-          data: formData,
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader(csrfHeader, csrfToken);
-          },
-          success: function (response) {
-            alert('장바구니에 추가되었습니다!');
-            $('#optionModal').fadeOut();
-            $('body').removeClass('no-scroll');
-          },
-          error: function () {
-            alert('장바구니 담기에 실패했습니다.');
-          }
-        });
-  	});
-  });
+	// 버튼 클릭 이벤트 바인딩 (onclick을 대체)
+	$('button').click(function() {
+		const menuName = $(this).attr('data-menuName');  // 버튼의 data 속성에서 menuName 가져오기
+	    addToCart(menuName);
+	    });
+	});
 </script>
 </body>
 </html>

@@ -35,7 +35,7 @@ public class QRCodeloginService {
     //회원가입시 QR코드 자동생성
     public String generateQRCode(String qrToken, String baseUrl) {
         try {
-            String qrLoginUrl = baseUrl + "/qr-login?token=" + qrToken;
+            String qrLoginUrl = baseUrl + "/QRredirect?token=" + qrToken;
 
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             Map<EncodeHintType, Object> hints = new HashMap<>();

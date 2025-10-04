@@ -11,12 +11,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
 @Controller
@@ -30,6 +34,29 @@ public class LoginController {
     public UserRepository userRepository;
     @Value("${qr.base.url}") 
     private String qrBaseUrl;
+    
+    /**
+     * 루트 경로("/") 요청을 처리합니다. (추가된 부분)
+     * 인증 상태에 따라 /menu 또는 /login으로 리다이렉트합니다.
+     */
+    @GetMapping("/")
+    public String handleRootRequest() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication != null && authentication.isAuthenticated() && 
+            !(authentication instanceof AnonymousAuthenticationToken)) {
+        	 Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        	 boolean isAdminOrMaster = authorities.stream()
+                     .anyMatch(a -> a.getAuthority().equals("ROLE_MASTER") || a.getAuthority().equals("ROLE_ADMIN"));
+                 
+                 if (isAdminOrMaster) {
+                     return "redirect:/admin";
+                 }
+            return "redirect:/menu"; 
+        }
+        
+        return "redirect:/login"; 
+    }
     
     /**
      * 로그인 요청일 들어올때

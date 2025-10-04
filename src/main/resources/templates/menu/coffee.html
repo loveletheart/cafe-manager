@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>커피 메뉴</title>
+  <title>COFFEE MENU</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta name="_csrf" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -187,6 +187,36 @@
     .cart-button:hover {
       background-color: #e05555;
       transform: translateY(-3px);
+    }
+
+    /* 페이지네이션 스타일 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 30px auto;
+      font-size: 18px;
+    }
+
+    .page-link {
+      text-decoration: none;
+      color: var(--text-color-dark);
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .page-link.active {
+      background-color: var(--primary-color);
+      color: var(--text-color-light);
+      border-color: var(--primary-color);
+      font-weight: bold;
     }
 
     /* 모달 오버레이 */
@@ -478,6 +508,16 @@
         font-size: 20px;
       }
 
+      /* 페이지네이션 모바일 */
+      .pagination {
+        font-size: 16px;
+        gap: 8px;
+        margin: 20px auto;
+      }
+      .page-link {
+        padding: 6px 12px;
+      }
+
       /* 모바일 모달 - 768px 이하 */
       .modal-options {
         padding: 5px 10px !important; /* 상하단 여백 더 줄임 */
@@ -676,11 +716,11 @@
 </header>
 
 <nav class="categories">
-  <a th:href="@{/menu/coffee}" th:classappend="${activeCategory == 'coffee'} ? 'active'">커피</a>
-  <a th:href="@{/menu/aid}" th:classappend="${activeCategory == 'aid'} ? 'active'">에이드</a>
-  <a th:href="@{/menu/cookie}" th:classappend="${activeCategory == 'cookie'} ? 'active'">쿠키</a>
-  <a th:href="@{/menu/bread}" th:classappend="${activeCategory == 'bread'} ? 'active'">빵</a>
-  <a th:href="@{/menu/cake}" th:classappend="${activeCategory == 'cake'} ? 'active'">케이크</a>
+  <a th:href="@{/menu/coffee(page=0)}" th:classappend="${activeCategory == 'coffee'} ? 'active'">커피</a>
+  <a th:href="@{/menu/aid(page=0)}" th:classappend="${activeCategory == 'aid'} ? 'active'">에이드</a>
+  <a th:href="@{/menu/cookie(page=0)}" th:classappend="${activeCategory == 'cookie'} ? 'active'">쿠키</a>
+  <a th:href="@{/menu/bread(page=0)}" th:classappend="${activeCategory == 'bread'} ? 'active'">빵</a>
+  <a th:href="@{/menu/cake(page=0)}" th:classappend="${activeCategory == 'cake'} ? 'active'">케이크</a>
 </nav>
 
 <main class="menu-grid">
@@ -693,6 +733,16 @@
     </div>
   </div>
 </main>
+
+<div class="pagination">
+    <a th:if="${currentPage > 0}" th:href="@{/menu/{category}(category=${activeCategory}, page=${currentPage - 1})}" class="page-link">&laquo; 이전</a>
+
+    <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/menu/{category}(category=${activeCategory}, page=${i})}" th:classappend="${i == currentPage} ? 'active'" class="page-link" th:text="${i + 1}"></a>
+    </th:block>
+
+    <a th:if="${currentPage < totalPages - 1}" th:href="@{/menu/{category}(category=${activeCategory}, page=${currentPage + 1})}" class="page-link">다음 &raquo;</a>
+</div>
 
 <a href="/menu/cart" class="cart-button">
   <i class="fas fa-shopping-cart"></i> 장바구니
@@ -798,15 +848,6 @@
           formElement.find('#cup-error').show();
           valid = false;
         }
-
-        // 시럽 선택이 필수가 아닌 경우 이 유효성 검사를 제거하거나 조건부로 만드세요.
-        // 현재 코드에서는 시럽 선택이 필수가 아님.
-        /*
-        if (!formElement.find('input[name="syrupType"]:checked').length) {
-            formElement.find('#syrup-error').show(); // 시럽 오류 메시지 ID가 필요함
-            valid = false;
-        }
-        */
 
         if (!valid) return;
 

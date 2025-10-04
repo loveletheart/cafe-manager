@@ -30,7 +30,15 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/qr_codes/**"
+                                "/qr_codes/**",
+                                "/static/**",
+                                "/*.js",
+                                "/*.css",
+                                "/favicon.ico"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/", 
+                                "/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/login",
@@ -69,7 +77,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Remote IP Valve 설정: 프록시 헤더 인식
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
         return factory -> {
